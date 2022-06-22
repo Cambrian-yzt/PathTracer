@@ -1,0 +1,6 @@
+/home/yzt/CG/PathTracer/code/build/CMakeFiles/rebuild_cache.dir
+/home/yzt/CG/PathTracer/code/build/CMakeFiles/edit_cache.dir
+/home/yzt/CG/PathTracer/code/build/CMakeFiles/PathTracer.dir
+/home/yzt/CG/PathTracer/code/build/deps/vecmath/CMakeFiles/rebuild_cache.dir
+/home/yzt/CG/PathTracer/code/build/deps/vecmath/CMakeFiles/edit_cache.dir
+/home/yzt/CG/PathTracer/code/build/deps/vecmath/CMakeFiles/vecmath.dir

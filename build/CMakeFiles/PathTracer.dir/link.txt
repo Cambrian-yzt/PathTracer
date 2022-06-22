@@ -1,0 +1,1 @@
+/usr/bin/c++   -Ofast -fopenmp  -rdynamic CMakeFiles/PathTracer.dir/src/image.cpp.o CMakeFiles/PathTracer.dir/src/main.cpp.o CMakeFiles/PathTracer.dir/src/mesh.cpp.o CMakeFiles/PathTracer.dir/src/scene_parser.cpp.o  -o ../bin/PathTracer  deps/vecmath/libvecmath.a 
