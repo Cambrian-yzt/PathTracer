@@ -17,9 +17,9 @@ static Vector3f transformDirection(const Matrix4f &mat, const Vector3f &dir) {
 // TODO: implement this class so that the intersect function first transforms the ray
 class Transform : public Object3D {
 public:
-    Transform() {}
+    Transform(): Object3D(nullptr, Transform_T) {}
 
-    Transform(const Matrix4f &m, Object3D *obj) : o(obj) {
+    Transform(const Matrix4f &m, Object3D *obj) : o(obj), Object3D(nullptr, Transform_T) {
         transform = m.inverse();
     }
 
@@ -37,9 +37,20 @@ public:
         return inter;
     }
 
-protected:
+    Vector3f transformedPoint(Vector3f &pnt) {
+        return transform.getSubmatrix3x3(0, 0).inverse() * (pnt - Vector3f(transform(0, 3), transform(1, 3), transform(2, 3)));
+    }
+
+    Vector3f transformedDirection(Vector3f &dir) {
+        return transform.getSubmatrix3x3(0, 0).inverse() * dir;
+    }
+
+    Object3D* get_obj() {
+        return o;
+    }
     Object3D *o; //un-transformed object
     Matrix4f transform;
+protected:
 };
 
 #endif //TRANSFORM_H

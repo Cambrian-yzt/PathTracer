@@ -17,7 +17,7 @@ public:
 
     }
 
-    Plane(const Vector3f &normal, double d, Material *m) : Object3D(m) {
+    Plane(const Vector3f &normal, double d, Material *m) : Object3D(m, Plane_T) {
         this -> norm = normal;
         this -> norm.normalize();
         this -> d = -d;
@@ -62,7 +62,7 @@ class Rectangle : public Object3D {
 public:
 
     Vector3f point, x, y;  // 约定：x对应texture的width，y对应texture的height
-    Rectangle(const Vector3f &point, const Vector3f &x, const Vector3f &y, Material *m) : Object3D(m), point(point), x(x), y(y) {}
+    Rectangle(const Vector3f &point, const Vector3f &x, const Vector3f &y, Material *m) : Object3D(m, Rectangle_T), point(point), x(x), y(y) {}
 
     ~Rectangle() override = default;
 
@@ -71,7 +71,7 @@ public:
         double d = Vector3f::dot(normal, point);
         Plane plane = Plane(normal, d, Object3D::material);
         Hit plane_hit;
-        if (plane.intersect(r, plane_hit, tmin)) {
+        if (plane.intersect(r, plane_hit, tmin) && plane_hit.getT() < h.getT()) {
             Vector3f hit_point = r.pointAtParameter(plane_hit.getT());
             double xmin = std::min(point.x(), (point + x + y).x());
             double ymin = std::min(point.y(), (point + x + y).y());
@@ -100,7 +100,7 @@ public:
         double tex_width = double(Object3D::material->texture->width()) - 1;
         double tex_height = double(Object3D::material->texture->height()) - 1;
         double ratio;
-        if (tex_width / xlen * ylen > tex_height)  // 计算比例尺，在不拉伸的情况下进�?�最大面�?利用
+        if (tex_width / xlen * ylen > tex_height)  // 计算比例尺，在不拉伸的情况下进行最大面积的利用
             ratio = tex_height / ylen;
         else
             ratio = tex_width / xlen;

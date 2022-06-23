@@ -15,7 +15,7 @@ public:
         r = 1;
     }
 
-    Sphere(const Vector3f &center, double radius, Material *material) : Object3D(material) {
+    Sphere(const Vector3f &center, double radius, Material *material) : Object3D(material, Sphere_T) {
         // 
         c = center;
         r = radius;

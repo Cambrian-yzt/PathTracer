@@ -144,11 +144,14 @@ int main(int argc, char *argv[]) {
     auto starting_time = chrono::high_resolution_clock::now();
     SceneParser scene = SceneParser(inputFile.data());
     Image image = Image(scene.getCamera()->getWidth(), scene.getCamera()->getHeight());
+    puts("starts building tree in main");
+    scene.getGroup()->build_kd_tree();
+    puts("finishes building tree in main");
     for (int x = 0; x < image.Width(); x++) {
         // cout << "rendering row " << x << "...\n";
         #pragma omp parallel for schedule(dynamic)      // OpenMP 
         for (int y = 0; y < image.Height(); y++) {
-            unsigned short randState[3] = {x * y, x * x, y * y * y};
+            unsigned short randState[3] = {x * x, x * y, y * y};
             Vector3f monte_carlo_radiance_sum = Vector3f::ZERO;
             for (auto sampling_base: sampling_bases) {
                 const double sx = sampling_base.x;

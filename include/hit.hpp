@@ -47,6 +47,12 @@ public:
         return texture_color;
     }
 
+    void print() {
+        std::cout << t;
+        normal.print(); 
+        std::cout << "============\n";
+    }
+
     void set(double _t, Material *m, const Vector3f &n, const Vector3f &tc = Vector3f(1., 1., 1.) ) {
         t = _t;
         material = m;

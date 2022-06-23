@@ -4,24 +4,50 @@
 #include "ray.hpp"
 #include "hit.hpp"
 #include "material.hpp"
+#include <limits>
+
+using namespace std;
 
 // Base class for all 3d entities.
+enum ObjType {
+    Sphere_T,
+    Plane_T,
+    Triangle_T,
+    Mesh_T,
+    Rectangle_T,
+    Group_T,
+    Transform_T
+};
+
+enum BoxState {
+    IN,
+    ON,
+    OUT
+};
+
 class Object3D {
 public:
     Object3D() : material(nullptr) {}
 
     virtual ~Object3D() = default;
 
-    explicit Object3D(Material *material) {
+    ObjType object_type;
+    Vector3f box_min = Vector3f(-1e10, -1e10, -1e10);
+    Vector3f box_max = Vector3f(1e10, 1e10, 1e10);
+
+    explicit Object3D(Material *material, ObjType obj_type) {
         this->material = material;
+        this->object_type = obj_type;
     }
 
     // Intersect Ray with this object. If hit, store information in hit structure.
     virtual bool intersect(const Ray &r, Hit &h, double tmin) = 0;
-    virtual Vector3f get_texel(Vector3f hit_point) { return Vector3f(1., 1., 1.); }
+    virtual BoxState check_box (Vector3f &bmin, Vector3f &bmax) { return ON; }
+    virtual Vector3f get_texel (Vector3f hit_point) { return Vector3f(1., 1., 1.); }
+    Material *material;
+    
 protected:
 
-    Material *material;
 };
 
 #endif

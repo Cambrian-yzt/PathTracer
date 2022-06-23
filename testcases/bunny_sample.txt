@@ -5,8 +5,8 @@ PerspectiveCamera {
     angle 60
     width  1024
     height 768
-    focal_length 100
-    aperture_size 1.5
+    focal_length 150
+    aperture_size 5
 }
 
 Lights {

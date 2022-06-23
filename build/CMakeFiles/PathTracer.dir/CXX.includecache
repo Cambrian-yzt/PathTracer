@@ -59,10 +59,22 @@ cmath
 ../include/group.hpp
 object3d.hpp
 ../include/object3d.hpp
+mesh.hpp
+../include/mesh.hpp
+triangle.hpp
+../include/triangle.hpp
+plane.hpp
+../include/plane.hpp
+sphere.hpp
+../include/sphere.hpp
+transform.hpp
+../include/transform.hpp
 ray.hpp
 ../include/ray.hpp
 hit.hpp
 ../include/hit.hpp
+kd_tree.hpp
+../include/kd_tree.hpp
 iostream
 -
 vector
@@ -78,6 +90,16 @@ ray.hpp
 cassert
 -
 vecmath.h
+-
+
+../include/kd_tree.hpp
+object3d.hpp
+../include/object3d.hpp
+vecmath.h
+-
+vector
+-
+limits
 -
 
 ../include/light.hpp
@@ -119,6 +141,8 @@ hit.hpp
 ../include/hit.hpp
 material.hpp
 ../include/material.hpp
+limits
+-
 
 ../include/plane.hpp
 object3d.hpp
@@ -136,6 +160,10 @@ cassert
 iostream
 -
 Vector3f.h
+-
+limits
+-
+cmath
 -
 
 ../include/scene_parser.hpp

@@ -31,8 +31,8 @@ bool Mesh::intersect(const Ray &r, Hit &h, double tmin) {
         if (tz1 > tz2)
             swap(tz1, tz2);
     }
-    double t_min = max(tx1, max(ty1, tz1));
-    double t_max = min(tx2, min(ty2, tz2));
+    double t_min = std::max(tx1, std::max(ty1, tz1));
+    double t_max = std::min(tx2, std::min(ty2, tz2));
     if (t_min >= t_max)  // 光线包围盒不相交，不用继续向下走了
     {
         // printf("missed bunny\n");
@@ -71,7 +71,7 @@ void Mesh::update_extents(const Vector3f &vec) {
         zmin = vec.z();
 }
 
-Mesh::Mesh(const char *filename, Material *material) : Object3D(material) {
+Mesh::Mesh(const char *filename, Material *material) : Object3D(material, Mesh_T) {
     xmin = std::numeric_limits<double>::max();
     xmax = -std::numeric_limits<double>::max();
     ymin = std::numeric_limits<double>::max();

@@ -25,12 +25,18 @@ CMakeFiles/PathTracer.dir/src/main.cpp.o
  ../include/group.hpp
  ../include/hit.hpp
  ../include/image.hpp
+ ../include/kd_tree.hpp
  ../include/light.hpp
  ../include/material.hpp
+ ../include/mesh.hpp
  ../include/object3d.hpp
+ ../include/plane.hpp
  ../include/ray.hpp
  ../include/scene_parser.hpp
+ ../include/sphere.hpp
  ../include/texture.hpp
+ ../include/transform.hpp
+ ../include/triangle.hpp
  /home/yzt/CG/PathTracer/code/src/main.cpp
 CMakeFiles/PathTracer.dir/src/mesh.cpp.o
  ../deps/vecmath/include/Matrix2f.h
@@ -65,6 +71,7 @@ CMakeFiles/PathTracer.dir/src/scene_parser.cpp.o
  ../include/group.hpp
  ../include/hit.hpp
  ../include/image.hpp
+ ../include/kd_tree.hpp
  ../include/light.hpp
  ../include/material.hpp
  ../include/mesh.hpp

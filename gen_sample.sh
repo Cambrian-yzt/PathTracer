@@ -1,1 +1,1 @@
-bin/PathTracer testcases/sample_rec.txt output/sample_rec.bmp 160
+bin/PathTracer testcases/sample_rec.txt output/sample_rec.bmp 400
