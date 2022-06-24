@@ -15,7 +15,7 @@ public:
 	Triangle() = delete;
 
     // a b c are three vertex positions of the triangle
-	Triangle( const Vector3f& a, const Vector3f& b, const Vector3f& c, Material* m) : Object3D(m, Triangle_T) {
+	Triangle( const Vector3f& a, const Vector3f& b, const Vector3f& c, Material* m, bool smooth = false, Vector3f *vnorms = nullptr) : Object3D(m, Triangle_T), smooth(smooth) {
 		vertices[0] = a; vertices[1] = b; vertices[2] = c;
 		normal = Vector3f::cross(a - b, a - c).normalized();
 		Object3D::box_min = Vector3f(
@@ -28,6 +28,11 @@ public:
 			max(a.y(), max(b.y(), c.y())),
 			max(a.z(), max(b.z(), c.z()))
 		);
+		if (this->smooth) {  // 开启平滑效果
+			this->vnorms[0] = vnorms[0];
+			this->vnorms[1] = vnorms[1];
+			this->vnorms[2] = vnorms[2];
+		}	
 	}
 
 	bool intersect( const Ray& ray,  Hit& hit , double tmin) override {
@@ -46,9 +51,42 @@ public:
 		double beta = coe * bm.determinant();
 		Matrix3f gm = Matrix3f(rdir_norm, e1, s);
 		double gamma = coe * gm.determinant();
+		Vector3f ret_norm = normal;
 		if(t > 0 && beta >= 0 && beta <= 1 && gamma >= 0 && gamma <= 1 && beta + gamma <= 1) {
+			if (smooth) {
+				Vector3f hit_point = ray.pointAtParameter(t);
+				double d[3];
+				for (int i = 0; i < 3; i++)
+					d[i] = (vertices[i] - hit_point).length();
+				int farthest_vertex_index = (d[0] > d[1] && d[0] > d[2]) ? 0 : (d[1] > d[2] ? 1 : 2);
+				Vector3f rv[3], rvnorms[3];
+				int idx = 1;
+				// 重排(reorient)，使V[0]离交点最远
+				rv[0] = vertices[farthest_vertex_index];
+				rvnorms[0] = vnorms[farthest_vertex_index];
+				for (int i = 0; i < 3; i++) {
+					if (i != farthest_vertex_index) {
+						rv[idx] = vertices[i];
+						rvnorms[idx++] = vnorms[i];
+					}
+				}
+				// 计算插值：为了避免浮点数精度问题，要尽量避免过小的数值，故选择离击中点最远的顶点为A（rv[0]），B和C任意。
+				// alpha：角A，beta：角B，theta：向量AB和向量AH的夹角，H为击中点。q：射线AH与线段BC的交点Q，t：BQ长度
+				// a：边BC长度，b：边AC长度
+				// 在三角形AQC中采用正弦定理解出t的值，进而得出Q的位置，用Q在BC上的相对位置对顶点B、C的法向量加权平均
+				// 再在AQ上加权平均，得到H的法向量插值
+				double theta = acos(Vector3f::dot(rv[1] - rv[0], hit_point - rv[0]) / ((rv[1] - rv[0]).length() * (hit_point - rv[0]).length()));
+				double alpha = acos(Vector3f::dot(rv[1] - rv[0], rv[2] - rv[0]) / ((rv[1] - rv[0]).length() * (rv[2] - rv[0]).length()));
+				double beta = acos(Vector3f::dot(rv[0] - rv[1], rv[2] - rv[1]) / ((rv[0] - rv[1]).length() * (rv[2] - rv[1]).length()));
+				double a = (rv[2] - rv[1]).length();
+				double b = (rv[2] - rv[0]).length();
+				double t = a - b * sin(alpha - theta) / sin(beta + theta);
+				Vector3f q = rv[1] + t * ((rv[2] - rv[1]).normalized());
+				Vector3f qnorm = rvnorms[1] + (rvnorms[2] - rvnorms[1]) * (t / a);
+				ret_norm = qnorm + (rvnorms[0] - qnorm) * ((q - hit_point).length() / (q - rv[0]).length());
+			}
 			if(t > tmin && t < hit.getT()) {
-				hit.set(t, material, normal);
+				hit.set(t, material, ret_norm);
 				return true;
 			} else
 				return false;
@@ -132,6 +170,8 @@ public:
 
 	Vector3f normal;
 	Vector3f vertices[3];
+	bool smooth = false;  // 是否开启发向平滑
+	Vector3f vnorms[3];  // 顶点法向，用于法向插值平滑效果
 protected:
 
 };

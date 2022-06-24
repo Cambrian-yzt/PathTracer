@@ -33,7 +33,7 @@ Materials {
         refractive_rate 1
     }
     PhongMaterial {
-      type REFR
+      type DIFF
       color 0.75 0.9 0.7
       emission 0 0 0
       refractive_rate 1.5
@@ -51,7 +51,8 @@ Group {
 
     MaterialIndex 1
     TriangleMesh {
-        obj_file mesh/bunny_200.obj
+        smooth
+        obj_file mesh/bunny_1k.obj
     }
     MaterialIndex 0
     Sphere {

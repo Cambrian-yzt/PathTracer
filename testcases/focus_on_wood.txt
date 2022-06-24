@@ -1,0 +1,229 @@
+PerspectiveCamera {
+    center 50 52 295
+    direction 0 -0.042612 -1
+    up 0 1 0
+    angle 60
+    width  1024
+    height 768
+    focal_length 100
+    aperture_size 1.5
+}
+
+Lights {
+    numLights 1
+    PointLight {
+      position 50 81.33 81.6
+      color 1 1 1
+    }
+}
+
+Background {
+    color 0 0 0
+}
+
+Materials {
+    numMaterials 15
+    PhongMaterial { 
+      type DIFF
+      color 0.9 0.9 0.9
+      emission 0 0 0
+      refractive_rate 1
+	}
+	PhongMaterial { 
+      type DIFF
+      color 0.9 0.9 0.9
+      emission 0 0 0
+      refractive_rate 1
+	}
+    PhongMaterial { 
+      type DIFF
+      color 0.5 0.5 0.75
+      emission 0 0 0
+      refractive_rate 1
+	}
+    PhongMaterial { 
+      type DIFF
+      color 0.75 0.75 0.75
+      emission 0 0 0
+      refractive_rate 1
+	}
+    PhongMaterial {
+      type DIFF
+      color 0.99 0.99 0.99
+      emission 0 0 0
+      refractive_rate 1
+      texture_file textures/tex_world_map.bmp
+    }
+    PhongMaterial {
+      type REFR
+      color 0.87 0.999 0.87
+      emission 0 0 0
+      refractive_rate 1.5
+    }
+    PhongMaterial {
+        type DIFF
+        color 0 0 0
+        emission 40 40 40
+        refractive_rate 1
+    }
+    PhongMaterial {
+      type REFR
+      color 0.8 0.4 0.9
+      emission 0 0 0
+      refractive_rate 1.5
+    }
+    PhongMaterial {
+      type SPEC
+      color 0.95 0.75 0.3
+      emission 0 0 0
+      refractive_rate 1
+    }
+    PhongMaterial {
+      type DIFF
+      color 0.99 0.99 0.99
+      emission 0 0 0
+      refractive_rate 1
+      texture_file textures/tex01.bmp
+    }
+    PhongMaterial {
+      type DIFF
+      color 0.99 0.99 0.99
+      emission 0 0 0
+      refractive_rate 1
+      texture_file textures/tex_stone.bmp
+    }
+    PhongMaterial {
+      type DIFF
+      color 0.99 0.99 0.99
+      emission 0 0 0
+      refractive_rate 1
+      texture_file textures/tex01.bmp
+    }
+    PhongMaterial { 
+      type SPEC
+      color 0.9 0.8 0.8
+      emission 0 0 0
+      refractive_rate 1
+	}
+    PhongMaterial {
+      type DIFF
+      color 0.99 0.99 0.99
+      emission 0 0 0
+      refractive_rate 1
+      texture_file textures/wood.bmp
+    }
+    PhongMaterial { 
+      type REFR
+      color 0.95 0.75 0.85
+      emission 0 0 0
+      refractive_rate 1.7
+	}
+}
+
+Group {
+    numObjects 17
+
+    MaterialIndex 0
+    Plane {
+        normal 1 0 0
+        offset 1
+    }
+
+    MaterialIndex 9
+    Rectangle {
+        point 1 0 0
+        x 98 0 0
+        y 0 81.6 0
+    }
+
+    MaterialIndex 10
+    Rectangle {
+        point 1 0 0
+        x 120 0 0
+        y 0 0 150
+    }
+    Rectangle {
+        point 1 0 150
+        x 120 0 0
+        y 0 0 150
+    }
+
+    MaterialIndex 11
+    Rectangle {
+        point 99 0 300
+        x -98 0 0
+        y 0 81.6 0
+    }
+
+    MaterialIndex 1
+    Plane {
+        normal 0 1 0
+        offset 81.6
+    }
+    Plane {
+        normal 0 1 0
+        offset -1
+    }
+
+    MaterialIndex 2
+    Plane {
+        normal 1 0 0
+        offset 99
+    }
+
+    MaterialIndex 4
+    Sphere {
+        center 35 25 60
+        radius 25
+    }
+
+
+    MaterialIndex 6
+    Sphere {
+        center 25 110 90
+        radius 30
+    }
+
+    Sphere {
+        center 75 110 40
+        radius 30
+    }
+
+    Sphere {
+        center 50 110 200
+        radius 30
+    }
+
+    Sphere {
+        center 50 110 250
+        radius 30
+    }
+
+
+    MaterialIndex 12
+    Sphere {
+        center 50 10.5 115
+        radius 10.5 
+    }
+
+    MaterialIndex 13
+    Sphere {
+        center 20 17 190
+        radius 17
+    }
+
+    MaterialIndex 5
+    Transform {
+		Scale  90 90 90
+		Translate  0.9 -0.06 1.7	
+        TriangleMesh {
+            obj_file mesh/bunny_200.obj
+        }
+    }
+    
+    MaterialIndex 14
+    Sphere {
+        center 80 16.5 35
+        radius 16.5
+    }
+}

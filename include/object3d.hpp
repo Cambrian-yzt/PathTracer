@@ -16,7 +16,9 @@ enum ObjType {
     Mesh_T,
     Rectangle_T,
     Group_T,
-    Transform_T
+    Transform_T,
+    Curve_T,
+    RevSufrace_T
 };
 
 enum BoxState {

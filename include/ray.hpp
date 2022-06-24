@@ -62,6 +62,7 @@ public:
         return t_min <= t_max;
     }
 
+
 private:
 
     Vector3f origin;

@@ -71,7 +71,7 @@ void Mesh::update_extents(const Vector3f &vec) {
         zmin = vec.z();
 }
 
-Mesh::Mesh(const char *filename, Material *material) : Object3D(material, Mesh_T) {
+Mesh::Mesh(const char *filename, Material *material, bool smooth) : Object3D(material, Mesh_T), smooth(smooth) {
     xmin = std::numeric_limits<double>::max();
     xmax = -std::numeric_limits<double>::max();
     ymin = std::numeric_limits<double>::max();
@@ -110,6 +110,7 @@ Mesh::Mesh(const char *filename, Material *material) : Object3D(material, Mesh_T
             ss >> vec[0] >> vec[1] >> vec[2];
             update_extents(vec);
             v.push_back(vec);
+            vnorms.push_back(Vector3f::ZERO);
         } else if (tok == fTok) {
             if (line.find(bslash) != std::string::npos) {
                 std::replace(line.begin(), line.end(), bslash, space);
@@ -137,6 +138,7 @@ Mesh::Mesh(const char *filename, Material *material) : Object3D(material, Mesh_T
     }
     computeNormal();
     compute_bounding_sphere();
+    compute_vertex_normal();
     printf("extents: x(%.4lf, %.4lf), y(%.4lf, %.4lf), z(%.4lf, %.4lf)\n", xmin, xmax, ymin, ymax, zmin, zmax);
     printf("bounding sphere: c(%4lf, %4lf, %4lf), r = %4lf\n", bounding_sphere_center.x(), bounding_sphere_center.y(), bounding_sphere_center.z(), bounding_sphere_radius);
     f.close();
@@ -178,5 +180,18 @@ void Mesh::computeNormal() {
         Vector3f b = v[triIndex[2]] - v[triIndex[0]];
         b = Vector3f::cross(a, b);
         n[triId] = b / b.length();
+    }
+}
+
+void Mesh::compute_vertex_normal() {
+    for (int triId = 0; triId < (int) t.size(); ++triId) {
+        TriangleIndex& triIndex = t[triId];
+        vnorms[triIndex[0]] += n[triId];
+        vnorms[triIndex[1]] += n[triId];
+        vnorms[triIndex[2]] += n[triId];
+    } 
+    
+    for (int i = 0; i < v.size(); i++) {
+        vnorms[i].normalize();
     }
 }

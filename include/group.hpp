@@ -143,10 +143,20 @@ private:
                         Vector3f a = mesh->v[triIndex[0]];
                         Vector3f b = mesh->v[triIndex[1]];
                         Vector3f c = mesh->v[triIndex[2]];
-                        if (transform_stack->size() > 0) {
-                            discretized_objs->push_back(de_transform_ize(new Triangle(a, b, c, mesh->material), transform_stack));
-                        } else
-                            discretized_objs->push_back(new Triangle(a, b, c, mesh->material));
+                        if (!mesh->smooth) {
+                            if (transform_stack->size() > 0) {
+                                discretized_objs->push_back(de_transform_ize(new Triangle(a, b, c, mesh->material), transform_stack));
+                            } else
+                                discretized_objs->push_back(new Triangle(a, b, c, mesh->material));
+                        } else {
+                            Vector3f vnorms[3];
+                            for (int vertex = 0; vertex < 3; vertex++)
+                                vnorms[vertex] = mesh->vnorms[triIndex[vertex]];
+                            if (transform_stack->size() > 0) {
+                                discretized_objs->push_back(de_transform_ize(new Triangle(a, b, c, mesh->material, true, vnorms), transform_stack));
+                            } else
+                                discretized_objs->push_back(new Triangle(a, b, c, mesh->material, true, vnorms));
+                        }
                     }
                 } else if (obj->object_type == Transform_T) {
                     puts("tran");
@@ -166,6 +176,9 @@ private:
                 } else if (obj->object_type == Sphere_T) {
                     puts("sph");
                     kd_excluded_objs.push_back(obj);
+                } else if (obj->object_type == RevSufrace_T) {
+                    puts("rev");
+                    kd_excluded_objs.push_back(obj);
                 } else {
                     assert(false);
                 }
@@ -183,10 +196,20 @@ private:
                     Vector3f a = mesh->v[triIndex[0]];
                     Vector3f b = mesh->v[triIndex[1]];
                     Vector3f c = mesh->v[triIndex[2]];
-                    if (transform_stack->size() > 0) {
-                        discretized_objs->push_back(de_transform_ize(new Triangle(a, b, c, mesh->material), transform_stack));
-                    } else
-                        discretized_objs->push_back(new Triangle(a, b, c, mesh->material));
+                    if (!mesh->smooth) {
+                        if (transform_stack->size() > 0) {
+                            discretized_objs->push_back(de_transform_ize(new Triangle(a, b, c, mesh->material), transform_stack));
+                        } else
+                            discretized_objs->push_back(new Triangle(a, b, c, mesh->material));
+                    } else {
+                        Vector3f vnorms[3];
+                        for (int vertex = 0; vertex < 3; vertex++)
+                            vnorms[vertex] = mesh->vnorms[triIndex[vertex]];
+                        if (transform_stack->size() > 0) {
+                            discretized_objs->push_back(de_transform_ize(new Triangle(a, b, c, mesh->material, true, vnorms), transform_stack));
+                        } else
+                            discretized_objs->push_back(new Triangle(a, b, c, mesh->material, true, vnorms));
+                    }
                 }
             } else if (obj->object_type == Transform_T) {
                 puts ("tt");
@@ -206,6 +229,11 @@ private:
             } else if (object_type == Sphere_T) {
                 puts ("tsph");
                 kd_excluded_objs.push_back(obj);
+            } else if (obj->object_type == RevSufrace_T) {
+                puts("trev");
+                auto transform = dynamic_cast<Transform*>(complex_obj);
+                kd_excluded_objs.push_back(new Transform(transform->transform.inverse(), obj));
+                puts("rev excluded");
             } else {
                 assert(false);
             }

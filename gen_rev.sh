@@ -1,0 +1,1 @@
+bin/PathTracer testcases/bspline.txt output/bspline.bmp 40

@@ -56,6 +56,22 @@ float.h
 cmath
 -
 
+../include/curve.hpp
+object3d.hpp
+../include/object3d.hpp
+vecmath.h
+-
+vector
+-
+utility
+-
+cmath
+-
+cstdio
+-
+algorithm
+-
+
 ../include/group.hpp
 object3d.hpp
 ../include/object3d.hpp
@@ -164,6 +180,18 @@ Vector3f.h
 limits
 -
 cmath
+-
+
+../include/revsurface.hpp
+tuple
+-
+curve.hpp
+../include/curve.hpp
+object3d.hpp
+../include/object3d.hpp
+triangle.hpp
+../include/triangle.hpp
+iostream
 -
 
 ../include/scene_parser.hpp
@@ -297,4 +325,8 @@ transform.hpp
 /home/yzt/CG/PathTracer/code/src/transform.hpp
 texture.hpp
 /home/yzt/CG/PathTracer/code/src/texture.hpp
+revsurface.hpp
+/home/yzt/CG/PathTracer/code/src/revsurface.hpp
+curve.hpp
+/home/yzt/CG/PathTracer/code/src/curve.hpp
 

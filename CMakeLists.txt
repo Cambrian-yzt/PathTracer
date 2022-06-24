@@ -32,6 +32,8 @@ SET(PA1_INCLUDES
         include/transform.hpp
         include/triangle.hpp
         include/texture.hpp
+        include/revsurface.hpp
+        include/curve.hpp
         )
 
 SET(CMAKE_CXX_STANDARD 11)

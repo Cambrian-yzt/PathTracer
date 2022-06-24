@@ -11,7 +11,7 @@
 class Mesh : public Object3D {
 
 public:
-    Mesh(const char *filename, Material *m);
+    Mesh(const char *filename, Material *m, bool smooth);
 
     struct TriangleIndex {
         TriangleIndex() {
@@ -28,8 +28,11 @@ public:
     bool intersect(const Ray &r, Hit &h, double tmin) override;
     void update_extents(const Vector3f &vec);
     void compute_bounding_sphere(void);
+    void compute_vertex_normal(void);
     double xmin, xmax, ymin, ymax, zmin, zmax;
     double bounding_sphere_radius;
+    bool smooth;  // 是否开启法向插值平滑效果
+    std::vector<Vector3f> vnorms;
     Vector3f bounding_sphere_center;
 
 private:
