@@ -117,7 +117,6 @@ struct coord {
 }sampling_bases[4] = {coord(0, 0), coord(0, 1), coord(1, 0), coord(1, 1)};
 
 int SAMPLES_PER_SAMPLING;
-
 void shift(SceneParser *scene, Ray &r, unsigned short *randState) {
     double f = scene->getCamera()->focal_length;
     double ap_size = scene->getCamera()->aperture_size;

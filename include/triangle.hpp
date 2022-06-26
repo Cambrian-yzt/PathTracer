@@ -51,7 +51,7 @@ public:
 		double beta = coe * bm.determinant();
 		Matrix3f gm = Matrix3f(rdir_norm, e1, s);
 		double gamma = coe * gm.determinant();
-		Vector3f ret_norm = normal;
+		Vector3f ret_norm = normal.normalized();
 		if(t > 0 && beta >= 0 && beta <= 1 && gamma >= 0 && gamma <= 1 && beta + gamma <= 1) {
 			if (smooth) {
 				Vector3f hit_point = ray.pointAtParameter(t);

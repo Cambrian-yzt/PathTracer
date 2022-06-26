@@ -46,7 +46,7 @@ public:
                 double t = (tp - sqrt(r * r - d * d)) / rdir_len;
                 Vector3f norm = ray.pointAtParameter(t) - c;
                 if(t > tmin && t < hit.getT()) {
-                    hit.set(t, material, norm.normalized(), get_texel(ray.pointAtParameter(t)));
+                    hit.set(t, material, get_texture_normal(ray.pointAtParameter(t), norm.normalized()), get_texel(ray.pointAtParameter(t)));
                     return true;
                 } else
                     return false;
@@ -60,7 +60,7 @@ public:
             double t = (tp + sqrt(r * r - d * d)) / rdir_len;
             Vector3f norm = c - ray.pointAtParameter(t);
             if(t > tmin && t < hit.getT()) {
-                hit.set(t, material, norm.normalized(), get_texel(ray.pointAtParameter(t)));
+                hit.set(t, material, get_texture_normal(ray.pointAtParameter(t), norm.normalized()), get_texel(ray.pointAtParameter(t)));
                 return true;
             } else
                 return false;
@@ -68,10 +68,7 @@ public:
         return false;
     }
 
-    Vector3f get_texel(Vector3f hit_point) override {
-        // 墨卡托投影 Mercator Projection
-        if (Object3D::material->texture == nullptr)
-            return Vector3f(1., 1., 1.);
+    std::pair<double, double> get_texture_uv(Vector3f hit_point) {
         Vector3f relative_pos = hit_point - c;
         Vector3f eqtr_projection = Vector3f(hit_point.x(), c.y(), hit_point.z()) - c;
         double latitude_cos = Vector3f::dot(relative_pos, Vector3f(0., -1., 0.)) / relative_pos.length();  // 纬度(0 deg, 180 deg)的余弦
@@ -90,7 +87,39 @@ public:
         // 完全利用材质，如果材质的比例不是2：1可能会出现错误拉伸
         double u = longitude / 360.0 * tex_width;
         double v = latitude / 180.0 * tex_height;
+        return std::pair<double, double>(u, v);
+    }
+
+    Vector3f get_texel(Vector3f hit_point) override {
+        // 墨卡托投影 Mercator Projection
+        if (Object3D::material->texture == nullptr)
+            return Vector3f(1., 1., 1.);
+        
+        std::pair<double, double> uv = get_texture_uv(hit_point);
+        double u = uv.first, v = uv.second;
         return Object3D::material->texture->get_texel(u, v);
+    }
+
+    Vector3f get_texture_normal(Vector3f hit_point, Vector3f hit_normal) {
+        if (Object3D::material->texture == nullptr || !Object3D::material->texture->is_normal())  // 没有开启法向扰动
+            return hit_normal;
+        
+        std::pair<double, double> uv = get_texture_uv(hit_point);
+        double u = uv.first, v = uv.second;
+        Vector3f tex_normal = 2 * Object3D::material->texture->get_normal(u, v) - Vector3f(1. ,1., 1.);  // texture normal in TANGENT SPACE
+        tex_normal.normalize();
+        double tex_width = double(Object3D::material->texture->width()) - 1;
+        double tex_height = double(Object3D::material->texture->height()) - 1;
+        double longitude = u * 2 * M_PI / tex_width;
+        Vector3f tangent = Vector3f(
+            -cos(longitude),
+            0,
+            sin(longitude)
+        );
+        assert(fabs(Vector3f::dot(tangent, hit_normal)) < 10e-8);
+        Vector3f bitangent = Vector3f::cross(tangent, hit_normal).normalized();
+        hit_normal.normalize();
+        return Matrix3f(tangent, bitangent, hit_normal) * tex_normal;
     }
 
 protected:

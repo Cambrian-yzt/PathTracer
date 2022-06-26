@@ -9,7 +9,7 @@
 
 class Camera {
 public:
-    Camera(const Vector3f &center, const Vector3f &direction, const Vector3f &up, int imgW, int imgH, double focal_length = -1.0, double aperture_size = -1.0) {
+    Camera(const Vector3f &center, const Vector3f &direction, const Vector3f &up, int imgW, int imgH, bool dispersion = false, double focal_length = -1.0, double aperture_size = -1.0) {
         this->center = center;
         this->direction = direction.normalized();
         this->horizontal = Vector3f::cross(this->direction, up).normalized();
@@ -18,6 +18,7 @@ public:
         this->height = imgH;
         this->focal_length = focal_length;
         this->aperture_size = aperture_size;
+        this->dispersion = dispersion;
     }
 
     // Generate rays for each screen-space coordinate
@@ -28,6 +29,7 @@ public:
     int getHeight() const { return height; }
     double focal_length;
     double aperture_size;
+    bool dispersion;
 
 protected:
     // Extrinsic parameters
@@ -46,7 +48,8 @@ class PerspectiveCamera : public Camera {
 
 public:
     PerspectiveCamera(const Vector3f &center, const Vector3f &direction,
-            const Vector3f &up, int imgW, int imgH, double angle, double focal_length = -1.0, double aperture_size = -1.0) : Camera(center, direction, up, imgW, imgH, focal_length, aperture_size) {
+            const Vector3f &up, int imgW, int imgH, double angle, bool dispersion = false, double focal_length = -1.0, double aperture_size = -1.0) : 
+            Camera(center, direction, up, imgW, imgH, dispersion, focal_length, aperture_size) {
         // angle is in radian.
         this -> angle = angle;
         cx = imgW / 2;

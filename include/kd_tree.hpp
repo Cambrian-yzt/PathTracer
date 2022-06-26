@@ -48,7 +48,7 @@ struct KdNode {
             double divider = 0.5;
             double heuristic = 1e20;
             unsigned short rndstate[3] = {l * l, r * r, l * r};
-            for (int rand_try = 0; rand_try < 30; rand_try++) {
+            for (int rand_try = 0; rand_try < 100; rand_try++) {
                 double rnd = erand48(rndstate);
                 lchild_max[depth % 3] = (box_min[depth % 3] + box_max[depth % 3]) * rnd;
                 vector<Object3D*> lbuf, mbuf, rbuf;
@@ -64,8 +64,8 @@ struct KdNode {
                     };
                 }
                 double ls = lbuf.size() + 1, ms = mbuf.size() + 1, rs = rbuf.size() + 1;
-                if (max(ls, rs) * 5 + ms * 95 < heuristic) {
-                    heuristic = max(ls, rs) * 5 + ms * 95;
+                if (max(ls, rs) * 30 + ms * 70 < heuristic) {
+                    heuristic = max(ls, rs) * 50 + ms * 50;
                     divider = rnd;
                 }
             }

@@ -130,21 +130,24 @@ void SceneParser::parsePerspectiveCamera() {
     double focal_length;
     double aperture_size;
     bool has_depth_of_field = false;
+    bool has_dispersion = false;
     if (!strcmp(token, "focal_length")) {
         focal_length = readDouble();
         getToken(token);
         assert(!strcmp(token, "aperture_size"));
         aperture_size = readDouble();
-        getToken(token);
-        assert (!strcmp(token, "}"));
         has_depth_of_field = true;
+        getToken(token);
     }
-    else
-        assert (!strcmp(token, "}"));
+    if (!strcmp(token, "dispersion")) {
+        has_dispersion = true;
+        getToken(token);
+    }
+    assert (!strcmp(token, "}"));
     if (has_depth_of_field)
-        camera = new PerspectiveCamera(center, direction, up, width, height, angle_radians, focal_length, aperture_size);
+        camera = new PerspectiveCamera(center, direction, up, width, height, angle_radians, has_dispersion, focal_length, aperture_size);
     else
-        camera = new PerspectiveCamera(center, direction, up, width, height, angle_radians);
+        camera = new PerspectiveCamera(center, direction, up, width, height, angle_radians, has_dispersion);
 }
 
 void SceneParser::parseBackground() {
@@ -256,8 +259,9 @@ void SceneParser::parseMaterials() {
 
 Material *SceneParser::parseMaterial() {
     char token[MAX_PARSER_TOKEN_LENGTH];
-    char filename[MAX_PARSER_TOKEN_LENGTH];
-    filename[0] = 0;
+    char filename1[MAX_PARSER_TOKEN_LENGTH], filename2[MAX_PARSER_TOKEN_LENGTH];
+    filename1[0] = 0;
+    filename2[0] = 0;
     Vector3f color(1, 1, 1), emission(0, 0, 0);
     Texture *texture = nullptr;
     TYPE type;
@@ -284,8 +288,20 @@ Material *SceneParser::parseMaterial() {
         } else if (strcmp(token, "refractive_rate") == 0) {
             refractive_rate = readDouble();
         } else if (strcmp(token, "texture_file") == 0){
+            bool normal = false;
+            getToken(filename1);
             getToken(token);
-            texture = new Texture(token);
+            if (strcmp(token, "normal_file") == 0) {
+                normal = true;
+                getToken(filename2);
+            }
+            if (normal) 
+                texture = new Texture(filename1, normal, filename2);
+            else {
+                texture = new Texture(filename1);
+                assert (!strcmp(token, "}"));
+                break;
+            }
             printf("texture read from %s, width = %d, height = %d\n", token, texture->width(), texture->height());
         } else{
             assert (!strcmp(token, "}"));
@@ -619,7 +635,7 @@ RevSurface *SceneParser::parseRevSurface() {
     }
     getToken(token);
     assert (!strcmp(token, "}"));
-    BsplineCurve *bscprofile = dynamic_cast<BsplineCurve*>(profile);
+    BsplineCurve *bscprofile = static_cast<BsplineCurve*>(profile);
     auto *answer = new RevSurface(bscprofile, current_material);
     return answer;
 }

@@ -27,6 +27,7 @@ public:
     std::vector<Vector3f> n;
     bool intersect(const Ray &r, Hit &h, double tmin) override;
     void update_extents(const Vector3f &vec);
+    void computeNormal();
     void compute_bounding_sphere(void);
     void compute_vertex_normal(void);
     double xmin, xmax, ymin, ymax, zmin, zmax;
@@ -38,7 +39,6 @@ public:
 private:
 
     // Normal can be used for light estimation
-    void computeNormal();
 };
 
 #endif

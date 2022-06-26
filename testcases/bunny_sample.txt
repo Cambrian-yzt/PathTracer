@@ -3,8 +3,8 @@ PerspectiveCamera {
     direction 0 -0.042612 -1
     up 0 1 0
     angle 60
-    width  1024
-    height 768
+    width  1920
+    height 1440
     focal_length 150
     aperture_size 0.05
 }
@@ -22,7 +22,7 @@ Background {
 }
 
 Materials {
-    numMaterials 15
+    numMaterials 17
     PhongMaterial { 
       type DIFF
       color 0.9 0.9 0.9
@@ -56,7 +56,7 @@ Materials {
     }
     PhongMaterial {
       type REFR
-      color 0.87 0.999 0.87
+      color 0.87 0.99 0.87
       emission 0 0 0
       refractive_rate 1.5
     }
@@ -90,7 +90,8 @@ Materials {
       color 0.99 0.99 0.99
       emission 0 0 0
       refractive_rate 1
-      texture_file textures/tex_stone.bmp
+      texture_file textures/concrete_bricks.bmp
+      normal_file textures/concrete_bricks_normal.bmp
     }
     PhongMaterial {
       type DIFF
@@ -110,7 +111,7 @@ Materials {
       color 0.99 0.99 0.99
       emission 0 0 0
       refractive_rate 1
-      texture_file textures/wood.bmp
+      texture_file textures/lava.bmp
     }
     PhongMaterial { 
       type REFR
@@ -118,15 +119,36 @@ Materials {
       emission 0 0 0
       refractive_rate 1.7
 	}
+    PhongMaterial {
+      type DIFF
+      color 0.99 0.99 0.99
+      emission 0 0 0
+      refractive_rate 1
+      texture_file textures/tex_stone.bmp
+    }
+    PhongMaterial {
+      type DIFF
+      color 0.99 0.99 0.99
+      emission 0 0 0
+      refractive_rate 1
+      texture_file textures/wood.bmp
+      normal_file textures/wood_normal.bmp
+    }
 }
 
 Group {
-    numObjects 17
+    numObjects 21
 
-    MaterialIndex 0
-    Plane {
-        normal 1 0 0
-        offset 1
+    MaterialIndex 16
+    Rectangle {
+        point 98 0 0
+        x 0 0 163.2
+        y 0 81.6 0
+    }
+    Rectangle {
+        point 98 0 163.2
+        x 0 0 163.2
+        y 0 81.6 0
     }
 
     MaterialIndex 9
@@ -136,16 +158,33 @@ Group {
         y 0 81.6 0
     }
 
-    MaterialIndex 10
+    MaterialIndex 15
+    Rectangle {
+        point 1 0 150
+        x 120 0 0
+        y 0 0 150
+    }
     Rectangle {
         point 1 0 0
         x 120 0 0
         y 0 0 150
     }
+    
+    MaterialIndex 10
     Rectangle {
-        point 1 0 150
-        x 120 0 0
-        y 0 0 150
+        point 1 0 100
+        x 0 0 100
+        y 0 81.6 0
+    }
+    Rectangle {
+        point 1 0 0
+        x 0 0 100
+        y 0 81.6 0
+    }
+    Rectangle {
+        point 1 0 200
+        x 0 0 100
+        y 0 81.6 0
     }
 
     MaterialIndex 11
@@ -198,7 +237,15 @@ Group {
         center 50 110 250
         radius 30
     }
-
+    
+    MaterialIndex 5
+    Transform {
+		Scale  90 90 90
+		Translate  0.9 -0.06 1.7	
+        TriangleMesh {
+            obj_file mesh/bunny_200.obj
+        }
+    }
 
     MaterialIndex 12
     Sphere {
@@ -212,18 +259,11 @@ Group {
         radius 17
     }
 
-    MaterialIndex 5
-    Transform {
-		Scale  90 90 90
-		Translate  0.9 -0.06 1.7	
-        TriangleMesh {
-            obj_file mesh/bunny_200.obj
-        }
-    }
     
     MaterialIndex 14
     Sphere {
         center 80 16.5 35
         radius 16.5
     }
+
 }

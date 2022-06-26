@@ -16,6 +16,7 @@
 
 
 static Triangle* de_transform_ize(Triangle* original, std::vector<Transform*> *transform_stack);
+static void de_transform_ize(Vector3f &original, std::vector<Transform*> *transform_stack);
 // TODO: Implement Group - add data structure to store a list of Object*
 class Group : public Object3D {
 
@@ -139,23 +140,28 @@ private:
                 } else if (obj->object_type == Mesh_T) {
                     puts("ms");
                     auto mesh = dynamic_cast<Mesh*>(obj);
+                    for (int v_index = 0; v_index < mesh->v.size(); v_index++) {
+                        de_transform_ize(mesh->v[v_index], transform_stack);
+                    }
+                    mesh->computeNormal();
+                    mesh->compute_vertex_normal();
                     for (auto triIndex: mesh->t) {
                         Vector3f a = mesh->v[triIndex[0]];
                         Vector3f b = mesh->v[triIndex[1]];
                         Vector3f c = mesh->v[triIndex[2]];
                         if (!mesh->smooth) {
-                            if (transform_stack->size() > 0) {
-                                discretized_objs->push_back(de_transform_ize(new Triangle(a, b, c, mesh->material), transform_stack));
-                            } else
-                                discretized_objs->push_back(new Triangle(a, b, c, mesh->material));
+                            // if (transform_stack->size() > 0) {
+                            //     discretized_objs->push_back(de_transform_ize(new Triangle(a, b, c, mesh->material), transform_stack));
+                            // } else
+                            discretized_objs->push_back(new Triangle(a, b, c, mesh->material));
                         } else {
                             Vector3f vnorms[3];
                             for (int vertex = 0; vertex < 3; vertex++)
                                 vnorms[vertex] = mesh->vnorms[triIndex[vertex]];
-                            if (transform_stack->size() > 0) {
-                                discretized_objs->push_back(de_transform_ize(new Triangle(a, b, c, mesh->material, true, vnorms), transform_stack));
-                            } else
-                                discretized_objs->push_back(new Triangle(a, b, c, mesh->material, true, vnorms));
+                            // if (transform_stack->size() > 0) {
+                            //     discretized_objs->push_back(de_transform_ize(new Triangle(a, b, c, mesh->material, true, vnorms), transform_stack));
+                            // } else
+                            discretized_objs->push_back(new Triangle(a, b, c, mesh->material, true, vnorms));
                         }
                     }
                 } else if (obj->object_type == Transform_T) {
@@ -190,25 +196,31 @@ private:
                 puts ("tg");
                 discretize(obj, discretized_objs, transform_stack);
             } else if (obj->object_type == Mesh_T) {
-                puts ("tm");
+                puts("tm");
                 auto mesh = dynamic_cast<Mesh*>(obj);
+                for (int v_index = 0; v_index < mesh->v.size(); v_index++) {
+                    de_transform_ize(mesh->v[v_index], transform_stack);
+                }
+                mesh->computeNormal();
+                mesh->compute_vertex_normal();
                 for (auto triIndex: mesh->t) {
                     Vector3f a = mesh->v[triIndex[0]];
                     Vector3f b = mesh->v[triIndex[1]];
                     Vector3f c = mesh->v[triIndex[2]];
+                    // cout << mesh->smooth << endl;
                     if (!mesh->smooth) {
-                        if (transform_stack->size() > 0) {
-                            discretized_objs->push_back(de_transform_ize(new Triangle(a, b, c, mesh->material), transform_stack));
-                        } else
-                            discretized_objs->push_back(new Triangle(a, b, c, mesh->material));
+                        // if (transform_stack->size() > 0) {
+                        //     discretized_objs->push_back(de_transform_ize(new Triangle(a, b, c, mesh->material), transform_stack));
+                        // } else
+                        discretized_objs->push_back(new Triangle(a, b, c, mesh->material));
                     } else {
                         Vector3f vnorms[3];
                         for (int vertex = 0; vertex < 3; vertex++)
                             vnorms[vertex] = mesh->vnorms[triIndex[vertex]];
-                        if (transform_stack->size() > 0) {
-                            discretized_objs->push_back(de_transform_ize(new Triangle(a, b, c, mesh->material, true, vnorms), transform_stack));
-                        } else
-                            discretized_objs->push_back(new Triangle(a, b, c, mesh->material, true, vnorms));
+                        // if (transform_stack->size() > 0) {
+                        //     discretized_objs->push_back(de_transform_ize(new Triangle(a, b, c, mesh->material, true, vnorms), transform_stack));
+                        // } else
+                        discretized_objs->push_back(new Triangle(a, b, c, mesh->material, true, vnorms));
                     }
                 }
             } else if (obj->object_type == Transform_T) {
@@ -232,7 +244,7 @@ private:
             } else if (obj->object_type == RevSufrace_T) {
                 puts("trev");
                 auto transform = dynamic_cast<Transform*>(complex_obj);
-                kd_excluded_objs.push_back(new Transform(transform->transform.inverse(), obj));
+                kd_excluded_objs.push_back(complex_obj);
                 puts("rev excluded");
             } else {
                 assert(false);
@@ -247,17 +259,46 @@ private:
 // de-transform-ization currently available for triangles
 // returns a new triangle, remember to delete!
 static Triangle* de_transform_ize(Triangle* original, std::vector<Transform*> *transform_stack) {
-    Triangle *tri = new Triangle(original->vertices[0], original->vertices[1], original->vertices[2], original->material);
-    for (int i = transform_stack->size() - 1; i >= 0; i--) {
-        Transform *t = transform_stack->at(i);
-        (*tri) = Triangle(
-            t->transformedPoint(tri->vertices[0]),
-            t->transformedPoint(tri->vertices[1]),
-            t->transformedPoint(tri->vertices[2]),
-            tri->material
-        );
+    Triangle *tri;
+    if (!original->smooth) {
+        tri = new Triangle(original->vertices[0], original->vertices[1], original->vertices[2], original->material);
+        for (int i = transform_stack->size() - 1; i >= 0; i--) {
+            Transform *t = transform_stack->at(i);
+            (*tri) = Triangle(
+                t->transformedPoint(tri->vertices[0]),
+                t->transformedPoint(tri->vertices[1]),
+                t->transformedPoint(tri->vertices[2]),
+                tri->material
+            );
+        }
+    } else {
+        tri = new Triangle(original->vertices[0], original->vertices[1], original->vertices[2], original->material, true, original->vnorms);
+        for (int i = transform_stack->size() - 1; i >= 0; i--) {
+            Transform *t = transform_stack->at(i);
+            Vector3f transformed_vnorms[3] = {
+                t->transformedDirection(tri->vnorms[0]).normalized(),
+                t->transformedDirection(tri->vnorms[1]).normalized(),
+                t->transformedDirection(tri->vnorms[2]).normalized()
+            };
+            (*tri) = Triangle(
+                t->transformedPoint(tri->vertices[0]),
+                t->transformedPoint(tri->vertices[1]),
+                t->transformedPoint(tri->vertices[2]),
+                tri->material,
+                true,
+                transformed_vnorms
+            );
+        }
     }
     return tri;
+}
+
+
+static void de_transform_ize(Vector3f &original, std::vector<Transform*> *transform_stack) {
+    for (int i = transform_stack->size() - 1; i >= 0; i--) {
+        Transform *t = transform_stack->at(i);
+        original = t->transformedPoint(original);
+    }
 }
 
 #endif

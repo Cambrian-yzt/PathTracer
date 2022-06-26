@@ -82,7 +82,7 @@ public:
             if (hit_point.x() >= xmin && hit_point.x() <= xmax &&
                 hit_point.y() >= ymin && hit_point.y() <= ymax &&
                 hit_point.z() >= zmin && hit_point.z() <= zmax) {
-                h.set(plane_hit.getT(), Object3D::material, plane_hit.getNormal(), get_texel((hit_point)));
+                h.set(plane_hit.getT(), Object3D::material, get_texture_normal(hit_point, plane_hit.getNormal()), get_texel((hit_point)));
                 return true;
             }
             else
@@ -91,10 +91,7 @@ public:
         return false;
     }
 
-    Vector3f get_texel(Vector3f hit_point) override {
-        if (Object3D::material->texture == nullptr)  // 没有材质
-            return Vector3f(1., 1., 1.);
-        
+    std::pair<double, double> get_texture_uv(Vector3f hit_point) {
         double xlen = x.length();
         double ylen = y.length();
         double tex_width = double(Object3D::material->texture->width()) - 1;
@@ -106,7 +103,29 @@ public:
             ratio = tex_width / xlen;
         double u = (Vector3f::dot(hit_point - point, x)) / x.length() * ratio;
         double v = (Vector3f::dot(hit_point - point, y)) / y.length() * ratio;
+        return std::pair<double, double>(u, v);
+    }
+
+    Vector3f get_texel(Vector3f hit_point) override {
+        if (Object3D::material->texture == nullptr)  // 没有材质
+            return Vector3f(1., 1., 1.);
+        std::pair<double, double> uv = get_texture_uv(hit_point);
+        double u = uv.first, v = uv.second;
         return Object3D::material->texture->get_texel(u, v);
+    }
+
+    Vector3f get_texture_normal(Vector3f hit_point, Vector3f hit_normal) {
+        if (Object3D::material->texture == nullptr || !Object3D::material->texture->is_normal())  // 没有开启法向扰动
+            return hit_normal;
+        
+        std::pair<double, double> uv = get_texture_uv(hit_point);
+        double u = uv.first, v = uv.second;
+        Vector3f tex_normal = 2 * Object3D::material->texture->get_normal(u, v) - 1.;  // texture normal in TANGENT SPACE
+        tex_normal.normalize();
+        Vector3f tangent = x.normalized();
+        Vector3f bitangent = y.normalized();
+        hit_normal.normalize();
+        return Matrix3f(tangent, bitangent, hit_normal) * tex_normal;
     }
 };
 

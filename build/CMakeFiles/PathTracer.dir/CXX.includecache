@@ -57,20 +57,18 @@ cmath
 -
 
 ../include/curve.hpp
-object3d.hpp
-../include/object3d.hpp
 vecmath.h
--
-vector
--
-utility
--
-cmath
--
-cstdio
 -
 algorithm
 -
+iostream
+-
+utility
+-
+vector
+-
+object3d.hpp
+../include/object3d.hpp
 
 ../include/group.hpp
 object3d.hpp

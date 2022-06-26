@@ -34,6 +34,7 @@ SET(PA1_INCLUDES
         include/texture.hpp
         include/revsurface.hpp
         include/curve.hpp
+        include/wavelength.hpp
         )
 
 SET(CMAKE_CXX_STANDARD 11)
