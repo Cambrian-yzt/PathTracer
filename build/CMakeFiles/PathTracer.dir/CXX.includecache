@@ -55,6 +55,8 @@ float.h
 -
 cmath
 -
+iostream
+-
 
 ../include/curve.hpp
 vecmath.h
@@ -232,6 +234,12 @@ cmath
 iostream
 -
 
+../include/wavelength.hpp
+vecmath.h
+-
+cmath
+-
+
 /home/yzt/CG/PathTracer/code/src/image.cpp
 cstdlib
 -
@@ -267,6 +275,8 @@ light.hpp
 /home/yzt/CG/PathTracer/code/src/light.hpp
 ray.hpp
 /home/yzt/CG/PathTracer/code/src/ray.hpp
+wavelength.hpp
+/home/yzt/CG/PathTracer/code/src/wavelength.hpp
 string
 -
 chrono

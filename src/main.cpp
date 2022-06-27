@@ -11,6 +11,7 @@
 #include "group.hpp"
 #include "light.hpp"
 #include "ray.hpp"
+#include "wavelength.hpp"
 
 #include <string>
 #include <chrono>
@@ -59,17 +60,20 @@ Vector3f radiance(SceneParser* scene, const Ray &ray, int depth, unsigned short 
         Vector3f v = Vector3f::cross(w, u);
         //  dir: 合理均匀的漫反射采样：在半球面上单位表面积均匀分布
         Vector3f dir = (u * cos(rnd1) * rnd2_sqrt + v * sin(rnd1) * rnd2_sqrt + w * sqrt(1 - rnd2)).normalized();
-        return (hit_mat->emission + f * radiance(scene, Ray(point, dir), depth, randState)) * hit.get_texture_color();
+        return (hit_mat->emission + f * radiance(scene, Ray(point, dir, ray.getWavelength()), depth, randState)) * hit.get_texture_color();
     } else if (hit_mat->type == SPEC) {  // 镜面反射 specular
         //  dir: 镜面反射直接算就行了，不需要采样
         Vector3f dir = (ray.getDirection() - normal * 2 * Vector3f::dot(normal, ray.getDirection())).normalized();
-        return (hit_mat->emission + f * (radiance(scene, Ray(point, dir), depth, randState))) * hit.get_texture_color();
+        return (hit_mat->emission + f * (radiance(scene, Ray(point, dir, ray.getWavelength()), depth, randState))) * hit.get_texture_color();
     } else if (hit_mat->type == REFR) {  // 折射 refraction 玻璃、水等
         Vector3f refl_dir = (ray.getDirection() - normal * 2 * Vector3f::dot(normal, ray.getDirection())).normalized();
-        Ray refl_ray(point, refl_dir);
+        Ray refl_ray(point, refl_dir, ray.getWavelength());
         // TODO: 三角面片法向量真的是向几何体外的吗？
         bool into = Vector3f::dot(normal, nl) > 0;
-        const double refr_air = 1.0, refr_mat = hit_mat->refractive_rate;
+        double refr_air = 1.0, refr_mat = hit_mat->refractive_rate;
+        if (scene->getCamera()->dispersion)
+            refr_mat = hit_mat->A + hit_mat->B / (nm(ray.getWavelength()) * nm(ray.getWavelength())) * 1e6;
+        // cout << ray.getWavelength() << " " << refr_mat << endl;
         double nnt;
         // TODO: 从介质射入介质怎么办？
         if (into) {
@@ -83,7 +87,7 @@ Vector3f radiance(SceneParser* scene, const Ray &ray, int depth, unsigned short 
             return (hit_mat->emission + f * radiance(scene, refl_ray, depth, randState)) * hit.get_texture_color();
         }
         Vector3f refr_dir = (ray.getDirection() * nnt - normal * ((into? 1: -1) * (ddn * nnt + sqrt(cos2t)))).normalized();
-        Ray refr_ray = Ray(point, refr_dir);
+        Ray refr_ray = Ray(point, refr_dir, ray.getWavelength());
         // 计算菲涅尔项（使用Schlick近似）
         double a = refr_mat - refr_air;
         double b = refr_mat + refr_air;
@@ -126,7 +130,7 @@ void shift(SceneParser *scene, Ray &r, unsigned short *randState) {
     Vector3f shift = Vector3f(erand48(randState) - 0.5, erand48(randState) - 0.5, erand48(randState) - 0.5) * ap_size;
     Vector3f shifted_origin = r.getOrigin() + shift;
     Vector3f shifted_dir = (p - shifted_origin).normalized();
-    r = Ray(shifted_origin, shifted_dir);
+    r = Ray(shifted_origin, shifted_dir, r.getWavelength());
 }
 
 int main(int argc, char *argv[]) {
@@ -142,6 +146,7 @@ int main(int argc, char *argv[]) {
     SAMPLES_PER_SAMPLING = atoi(argv[3]);
     auto starting_time = chrono::high_resolution_clock::now();
     SceneParser scene = SceneParser(inputFile.data());
+    cout << scene.getCamera()->dispersion << endl;
     Image image = Image(scene.getCamera()->getWidth(), scene.getCamera()->getHeight());
     puts("starts building tree in main");
     scene.getGroup()->build_kd_tree();
@@ -171,13 +176,20 @@ int main(int argc, char *argv[]) {
                     y_bias = (sy + 0.5 + y_smp_bias) / 2.0;
                     // if (x % 8 == 0 && y == 128) {
                     //     printf("samples: (%lf, %lf)\n", x + x_bias,  y + y_bias);
-                    // } 
-                    Ray cam_ray = scene.getCamera()->generateRay(Vector2f(x + x_bias, y + y_bias));
+                    // }
+                    if (!scene.getCamera()->dispersion) {
+                        Ray cam_ray = scene.getCamera()->generateRay(Vector2f(x + x_bias, y + y_bias));
+                        shift(&scene, cam_ray, randState);
+                        monte_carlo_radiance_sum += radiance(&scene, cam_ray, 0, randState);
+                    } else {
+                        double wavelength = (erand48(randState) * (750 - 380) + 380) * 1e-9;
+                        Ray cam_ray = scene.getCamera()->generateRay(Vector2f(x + x_bias, y + y_bias), wavelength);
+                        shift(&scene, cam_ray, randState);
+                        Vector3f color = wavelength_to_rgb(wavelength);
+                        monte_carlo_radiance_sum += radiance(&scene, cam_ray, 0, randState) * color;
+                    }
                     // printf("============\n");
                     // cam_ray.getOrigin().print();
-                    shift(&scene, cam_ray, randState);
-                    // cam_ray.getOrigin().print();
-                    monte_carlo_radiance_sum += radiance(&scene, cam_ray, 0, randState);
                 }
             }
             image.SetPixel(x, y, monte_carlo_radiance_sum / SAMPLES_PER_SAMPLING);

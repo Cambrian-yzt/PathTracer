@@ -238,9 +238,9 @@ private:
             } else if (obj->object_type == Rectangle_T) {
                 puts ("trec");
                 kd_excluded_objs.push_back(obj);
-            } else if (object_type == Sphere_T) {
+            } else if (obj->object_type == Sphere_T) {
                 puts ("tsph");
-                kd_excluded_objs.push_back(obj);
+                kd_excluded_objs.push_back(complex_obj);
             } else if (obj->object_type == RevSufrace_T) {
                 puts("trev");
                 auto transform = dynamic_cast<Transform*>(complex_obj);

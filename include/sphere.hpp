@@ -9,7 +9,7 @@
 
 class Sphere : public Object3D {
 public:
-    Sphere() {
+    Sphere() : Object3D(nullptr, Sphere_T) {
         // unit ball at the center
         c = Vector3f(0, 0, 0);
         r = 1;

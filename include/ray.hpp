@@ -13,14 +13,16 @@ class Ray {
 public:
 
     Ray() = delete;
-    Ray(const Vector3f &orig, const Vector3f &dir) {
+    Ray(const Vector3f &orig, const Vector3f &dir, double _wavelength = -1.0) {
         origin = orig;
         direction = dir;
+        wavelength = _wavelength;
     }
 
     Ray(const Ray &r) {
         origin = r.origin;
         direction = r.direction;
+        wavelength = r.wavelength;
     }
 
     const Vector3f &getOrigin() const {
@@ -29,6 +31,10 @@ public:
 
     const Vector3f &getDirection() const {
         return direction;
+    }
+
+    const double getWavelength() const {
+        return wavelength;
     }
 
     Vector3f pointAtParameter(double t) const {
@@ -67,6 +73,7 @@ private:
 
     Vector3f origin;
     Vector3f direction;
+    double wavelength;  // in meters
 
 };
 

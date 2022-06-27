@@ -37,6 +37,7 @@ CMakeFiles/PathTracer.dir/src/main.cpp.o
  ../include/texture.hpp
  ../include/transform.hpp
  ../include/triangle.hpp
+ ../include/wavelength.hpp
  /home/yzt/CG/PathTracer/code/src/main.cpp
 CMakeFiles/PathTracer.dir/src/mesh.cpp.o
  ../deps/vecmath/include/Matrix2f.h

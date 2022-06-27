@@ -266,6 +266,7 @@ Material *SceneParser::parseMaterial() {
     Texture *texture = nullptr;
     TYPE type;
     double refractive_rate = 1;
+    double A = -1.0 , B = 0;
     getToken(token);
     assert (!strcmp(token, "{"));
     while (true) {
@@ -303,6 +304,9 @@ Material *SceneParser::parseMaterial() {
                 break;
             }
             printf("texture read from %s, width = %d, height = %d\n", token, texture->width(), texture->height());
+        } else if (strcmp(token, "cauchy") == 0) {
+            A = readDouble();
+            B = readDouble();
         } else{
             assert (!strcmp(token, "}"));
             break;
@@ -321,7 +325,7 @@ Material *SceneParser::parseMaterial() {
         //     break;
         // }
     }
-    auto *answer = new Material(type, color, emission, refractive_rate, texture);
+    auto *answer = new Material(type, color, emission, refractive_rate, texture, A, B);
     return answer;
 }
 

@@ -15,13 +15,19 @@ class Material {
 public:
 
     TYPE type;
-    double refractive_rate;
+    double refractive_rate, A, B;
     Vector3f color, emission;
     Texture* texture;
     
-    explicit Material(const TYPE _type, const Vector3f &_color = Vector3f::ZERO, const Vector3f &_emission = Vector3f::ZERO, double _refractive_rate = 0, Texture *_tex = nullptr) :
+    explicit Material(const TYPE _type, const Vector3f &_color = Vector3f::ZERO, const Vector3f &_emission = Vector3f::ZERO, double _refractive_rate = 0, Texture *_tex = nullptr, double _A = -1, double _B = 0) :
             type(_type), color(_color), emission(_emission), refractive_rate(_refractive_rate), texture(_tex){
-
+        if (_A < 0) {
+            A = refractive_rate;
+            B = 0;
+        } else {
+            A = _A;
+            B = _B;
+        }
     }
 
     virtual ~Material(){

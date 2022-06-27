@@ -1,8 +1,8 @@
 PerspectiveCamera {
-    center 50 52 295.6
+    center 50 52 150
     direction 0 -0.042612 -1
     up 0 1 0
-    angle 35
+    angle 85
     width 1024
     height 768
     dispersion
@@ -24,7 +24,7 @@ Materials {
     numMaterials 12
     PhongMaterial { 
       type DIFF
-      color 0.75 0.5 0.5
+      color 0.7 0.7 0.7
       emission 0 0 0
       refractive_rate 1
 	}
@@ -36,7 +36,7 @@ Materials {
 	}
     PhongMaterial { 
       type DIFF
-      color 0.5 0.5 0.75
+      color 0.7 0.7 0.7
       emission 0 0 0
       refractive_rate 1
 	}
@@ -55,14 +55,15 @@ Materials {
     }
     PhongMaterial {
       type REFR
-      color 0.87 0.999 0.87
+      color 0.99 0.99 0.99
       emission 0 0 0
       refractive_rate 1.5
+      cauchy 1.70 0.013
     }
     PhongMaterial {
         type DIFF
         color 0 0 0
-        emission 40 40 40
+        emission 200 200 200
         refractive_rate 1
     }
     PhongMaterial {
@@ -79,21 +80,20 @@ Materials {
     }
     PhongMaterial {
       type DIFF
-      color 0.99 0.99 0.99
+      color 0.2 0.2 0.2
       emission 0 0 0
       refractive_rate 1
       texture_file textures/tex06.bmp
     }
     PhongMaterial {
       type DIFF
-      color 0.99 0.99 0.99
+      color 0.9 0.9 0.9
       emission 0 0 0
       refractive_rate 1
-      texture_file textures/tex_stone.bmp
     }
     PhongMaterial {
       type DIFF
-      color 0.99 0.99 0.99
+      color 0.2 0.2 0.2
       emission 0 0 0
       refractive_rate 1
       texture_file textures/tex01.bmp
@@ -101,7 +101,7 @@ Materials {
 }
 
 Group {
-    numObjects 14
+    numObjects 10
     
     MaterialIndex 0
     Plane {
@@ -151,38 +151,21 @@ Group {
         offset 99
     }
 
-    MaterialIndex 4
-    Sphere {
-        center 27 30 85
-        radius 20
+    MaterialIndex 5
+    Transform {
+        Scale 1.5 1 1.5
+        Sphere {
+            center 50 50 40
+            radius 18.5
+        }
     }
 
-    MaterialIndex 5
-    Sphere {
-        center 73 16.5 78
-        radius 16.5
-    }
 
     MaterialIndex 6
     Sphere {
-        center 50 110 50
-        radius 30
+        center 50 85 50
+        radius 5
     }
 
-    Sphere {
-        center 50 110 150
-        radius 30
-    }
-
-    Sphere {
-        center 50 110 250
-        radius 30
-    }
-
-    MaterialIndex 8
-    Sphere {
-        center 70 20 27
-        radius 20
-    }
 
 }

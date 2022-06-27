@@ -5,6 +5,7 @@
 #include <vecmath.h>
 #include <float.h>
 #include <cmath>
+#include <iostream>
 
 
 class Camera {
@@ -22,7 +23,7 @@ public:
     }
 
     // Generate rays for each screen-space coordinate
-    virtual Ray generateRay(const Vector2f &point) = 0;
+    virtual Ray generateRay(const Vector2f &point, double wavelength = -1) = 0;
     virtual ~Camera() = default;
 
     int getWidth() const { return width; }
@@ -58,14 +59,17 @@ public:
         fy = fx;
     }
 
-    Ray generateRay(const Vector2f &point) override {
+    Ray generateRay(const Vector2f &point, double wavelength = -1.0) override {
         // 
         Vector3f dir_rc = Vector3f((point[0] - cx) / fx, (cy - point[1]) / fy, 1.0);
         dir_rc.normalize();
         Matrix3f R = Matrix3f(this->horizontal, -this->up, this->direction);
         Vector3f dir_rw = R * dir_rc;
         dir_rw.normalize();
-        return Ray(center, dir_rw);
+        // std::cout << wavelength << std::endl;
+        if (wavelength < 0)
+            return Ray(center, dir_rw);
+        else return Ray(center, dir_rw, wavelength);
     }
 protected:
     double angle;

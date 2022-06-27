@@ -36,6 +36,7 @@ CMakeFiles/PathTracer.dir/src/main.cpp.o: ../include/sphere.hpp
 CMakeFiles/PathTracer.dir/src/main.cpp.o: ../include/texture.hpp
 CMakeFiles/PathTracer.dir/src/main.cpp.o: ../include/transform.hpp
 CMakeFiles/PathTracer.dir/src/main.cpp.o: ../include/triangle.hpp
+CMakeFiles/PathTracer.dir/src/main.cpp.o: ../include/wavelength.hpp
 CMakeFiles/PathTracer.dir/src/main.cpp.o: ../src/main.cpp
 
 CMakeFiles/PathTracer.dir/src/mesh.cpp.o: ../deps/vecmath/include/Matrix2f.h
