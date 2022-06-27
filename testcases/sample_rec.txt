@@ -57,7 +57,7 @@ Materials {
       type REFR
       color 0.99 0.99 0.99
       emission 0 0 0
-      refractive_rate 1.5
+      refractive_rate 1.73
       cauchy 1.70 0.013
     }
     PhongMaterial {
@@ -101,7 +101,7 @@ Materials {
 }
 
 Group {
-    numObjects 10
+    numObjects 12
     
     MaterialIndex 0
     Plane {
@@ -158,6 +158,16 @@ Group {
             center 50 50 40
             radius 18.5
         }
+    }
+
+    MaterialIndex 5
+    Sphere {
+      center 15 15 40
+      radius 10
+    }
+    Sphere {
+        center 50 71 70
+        radius 10
     }
 
 

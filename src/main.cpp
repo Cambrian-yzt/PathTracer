@@ -182,7 +182,7 @@ int main(int argc, char *argv[]) {
                         shift(&scene, cam_ray, randState);
                         monte_carlo_radiance_sum += radiance(&scene, cam_ray, 0, randState);
                     } else {
-                        double wavelength = (erand48(randState) * (750 - 380) + 380) * 1e-9;
+                        double wavelength = generate_wavelength(randState);
                         Ray cam_ray = scene.getCamera()->generateRay(Vector2f(x + x_bias, y + y_bias), wavelength);
                         shift(&scene, cam_ray, randState);
                         Vector3f color = wavelength_to_rgb(wavelength);
