@@ -1,11 +1,10 @@
 PerspectiveCamera {
-    center 50 52 150
+    center 50 52 295.6
     direction 0 -0.042612 -1
     up 0 1 0
-    angle 85
+    angle 35
     width 1024
     height 768
-    dispersion
 }
 
 Lights {
@@ -21,10 +20,10 @@ Background {
 }
 
 Materials {
-    numMaterials 12
+    numMaterials 9
     PhongMaterial { 
       type DIFF
-      color 0.7 0.7 0.7
+      color 0.75 0.5 0.5
       emission 0 0 0
       refractive_rate 1
 	}
@@ -36,7 +35,7 @@ Materials {
 	}
     PhongMaterial { 
       type DIFF
-      color 0.7 0.7 0.7
+      color 0.5 0.5 0.75
       emission 0 0 0
       refractive_rate 1
 	}
@@ -48,22 +47,20 @@ Materials {
 	}
     PhongMaterial {
       type DIFF
-      color 0.99 0.99 0.99
+      color 0.6 0.6 0.9
       emission 0 0 0
       refractive_rate 1
-      texture_file textures/tex_world_map.bmp
     }
     PhongMaterial {
       type REFR
-      color 0.99 0.99 0.99
+      color 0.87 0.999 0.87
       emission 0 0 0
-      refractive_rate 1.73
-      cauchy 1.70 0.013
+      refractive_rate 1.5
     }
     PhongMaterial {
         type DIFF
         color 0 0 0
-        emission 200 200 200
+        emission 40 40 40
         refractive_rate 1
     }
     PhongMaterial {
@@ -78,30 +75,10 @@ Materials {
       emission 0 0 0
       refractive_rate 1
     }
-    PhongMaterial {
-      type DIFF
-      color 0.2 0.2 0.2
-      emission 0 0 0
-      refractive_rate 1
-      texture_file textures/tex06.bmp
-    }
-    PhongMaterial {
-      type DIFF
-      color 0.9 0.9 0.9
-      emission 0 0 0
-      refractive_rate 1
-    }
-    PhongMaterial {
-      type DIFF
-      color 0.2 0.2 0.2
-      emission 0 0 0
-      refractive_rate 1
-      texture_file textures/tex01.bmp
-    }
 }
 
 Group {
-    numObjects 12
+    numObjects 9
     
     MaterialIndex 0
     Plane {
@@ -109,40 +86,18 @@ Group {
         offset 1
     }
 
-    MaterialIndex 9
-    Rectangle {
-        point 1 0 0
-        x 98 0 0
-        y 0 81.6 0
-    }
-
-    MaterialIndex 10
-    Rectangle {
-        point 1 0 0
-        x 120 0 0
-        y 0 0 150
-    }
-    Rectangle {
-        point 1 0 150
-        x 120 0 0
-        y 0 0 150
-    }
-
-    MaterialIndex 11
-    Rectangle {
-        point 99 0 300
-        x -98 0 0
-        y 0 81.6 0
-    }
-
     MaterialIndex 1
+    Plane {
+        normal 0 0 1
+        offset 0
+    }
     Plane {
         normal 0 1 0
         offset 81.6
     }
     Plane {
         normal 0 1 0
-        offset -1
+        offset 0
     }
 
     MaterialIndex 2
@@ -151,31 +106,29 @@ Group {
         offset 99
     }
 
-    MaterialIndex 5
-    Transform {
-        Scale 1.5 1 1.5
-        Sphere {
-            center 50 50 40
-            radius 18.5
-        }
+    MaterialIndex 4
+    Sphere {
+        center 27 16.5 47
+        radius 16.5
+        motion 0 10 0
     }
 
     MaterialIndex 5
     Sphere {
-      center 15 15 40
-      radius 10
+        center 73 16.5 78
+        radius 16.5
     }
-    Sphere {
-        center 50 71 70
-        radius 10
-    }
-
 
     MaterialIndex 6
     Sphere {
-        center 50 85 50
-        radius 5
+        center 50 110 50
+        radius 30
     }
 
+    MaterialIndex 8
+    Sphere {
+        center 70 50 27
+        radius 15
+    }
 
 }

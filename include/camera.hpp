@@ -23,7 +23,7 @@ public:
     }
 
     // Generate rays for each screen-space coordinate
-    virtual Ray generateRay(const Vector2f &point, double wavelength = -1) = 0;
+    virtual Ray generateRay(const Vector2f &point, const double time, double wavelength = -1) = 0;
     virtual ~Camera() = default;
 
     int getWidth() const { return width; }
@@ -59,7 +59,7 @@ public:
         fy = fx;
     }
 
-    Ray generateRay(const Vector2f &point, double wavelength = -1.0) override {
+    Ray generateRay(const Vector2f &point, const double time, double wavelength = -1.0) override {
         // 
         Vector3f dir_rc = Vector3f((point[0] - cx) / fx, (cy - point[1]) / fy, 1.0);
         dir_rc.normalize();
@@ -68,8 +68,8 @@ public:
         dir_rw.normalize();
         // std::cout << wavelength << std::endl;
         if (wavelength < 0)
-            return Ray(center, dir_rw);
-        else return Ray(center, dir_rw, wavelength);
+            return Ray(center, dir_rw, time);
+        else return Ray(center, dir_rw, time, wavelength);
     }
 protected:
     double angle;

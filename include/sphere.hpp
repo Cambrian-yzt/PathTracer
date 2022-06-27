@@ -15,7 +15,7 @@ public:
         r = 1;
     }
 
-    Sphere(const Vector3f &center, double radius, Material *material) : Object3D(material, Sphere_T) {
+    Sphere(const Vector3f &center, double radius, Material *material, Vector3f motion = Vector3f::ZERO) : Object3D(material, Sphere_T, motion) {
         // 
         c = center;
         r = radius;
@@ -25,7 +25,8 @@ public:
 
     bool intersect(const Ray &ray, Hit &hit, double tmin) override {
         //
-        Vector3f l = c - ray.getOrigin();
+        Vector3f motion_center = c + ray.get_time() * Object3D::motion;
+        Vector3f l = motion_center - ray.getOrigin();
         bool inside = (l.squaredLength() < r * r);
         bool on_surface = (l.squaredLength() == r * r);
         Vector3f rdir_norm = ray.getDirection().normalized();
@@ -44,9 +45,9 @@ public:
                 if(d > r)
                     return false;
                 double t = (tp - sqrt(r * r - d * d)) / rdir_len;
-                Vector3f norm = ray.pointAtParameter(t) - c;
+                Vector3f norm = ray.pointAtParameter(t) - motion_center;
                 if(t > tmin && t < hit.getT()) {
-                    hit.set(t, material, get_texture_normal(ray.pointAtParameter(t), norm.normalized()), get_texel(ray.pointAtParameter(t)));
+                    hit.set(t, material, get_texture_normal(ray.pointAtParameter(t), norm.normalized(), ray.get_time()), get_texel(ray.pointAtParameter(t), ray.get_time()));
                     return true;
                 } else
                     return false;
@@ -58,9 +59,9 @@ public:
             double tp = Vector3f::dot(l, rdir_norm);
             double d = sqrt(l.squaredLength() - tp * tp);
             double t = (tp + sqrt(r * r - d * d)) / rdir_len;
-            Vector3f norm = c - ray.pointAtParameter(t);
+            Vector3f norm = motion_center - ray.pointAtParameter(t);
             if(t > tmin && t < hit.getT()) {
-                hit.set(t, material, get_texture_normal(ray.pointAtParameter(t), norm.normalized()), get_texel(ray.pointAtParameter(t)));
+                hit.set(t, material, get_texture_normal(ray.pointAtParameter(t), norm.normalized(), ray.get_time()), get_texel(ray.pointAtParameter(t), ray.get_time()));
                 return true;
             } else
                 return false;
@@ -68,9 +69,10 @@ public:
         return false;
     }
 
-    std::pair<double, double> get_texture_uv(Vector3f hit_point) {
-        Vector3f relative_pos = hit_point - c;
-        Vector3f eqtr_projection = Vector3f(hit_point.x(), c.y(), hit_point.z()) - c;
+    std::pair<double, double> get_texture_uv(Vector3f hit_point, double time) {
+        Vector3f motion_center = c + time * Object3D::motion;
+        Vector3f relative_pos = hit_point - motion_center;
+        Vector3f eqtr_projection = Vector3f(hit_point.x(), motion_center.y(), hit_point.z()) - motion_center;
         double latitude_cos = Vector3f::dot(relative_pos, Vector3f(0., -1., 0.)) / relative_pos.length();  // 纬度(0 deg, 180 deg)的余弦
         double latitude = 180 * acos(latitude_cos) / M_PI; 
         double longitude_cos = Vector3f::dot(eqtr_projection, Vector3f(0., 0., -1.)) / eqtr_projection.length();  // 经度(0 deg, 360 deg)的余弦
@@ -90,21 +92,21 @@ public:
         return std::pair<double, double>(u, v);
     }
 
-    Vector3f get_texel(Vector3f hit_point) override {
+    Vector3f get_texel(Vector3f hit_point, double time = 0.0) override {
         // 墨卡托投影 Mercator Projection
         if (Object3D::material->texture == nullptr)
             return Vector3f(1., 1., 1.);
         
-        std::pair<double, double> uv = get_texture_uv(hit_point);
+        std::pair<double, double> uv = get_texture_uv(hit_point, time);
         double u = uv.first, v = uv.second;
         return Object3D::material->texture->get_texel(u, v);
     }
 
-    Vector3f get_texture_normal(Vector3f hit_point, Vector3f hit_normal) {
+    Vector3f get_texture_normal(Vector3f hit_point, Vector3f hit_normal, double time) {
         if (Object3D::material->texture == nullptr || !Object3D::material->texture->is_normal())  // 没有开启法向扰动
             return hit_normal;
         
-        std::pair<double, double> uv = get_texture_uv(hit_point);
+        std::pair<double, double> uv = get_texture_uv(hit_point, time);
         double u = uv.first, v = uv.second;
         Vector3f tex_normal = 2 * Object3D::material->texture->get_normal(u, v) - Vector3f(1. ,1., 1.);  // texture normal in TANGENT SPACE
         tex_normal.normalize();

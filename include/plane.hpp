@@ -106,7 +106,7 @@ public:
         return std::pair<double, double>(u, v);
     }
 
-    Vector3f get_texel(Vector3f hit_point) override {
+    Vector3f get_texel(Vector3f hit_point, double time = 0.0) override {
         if (Object3D::material->texture == nullptr)  // 没有材质
             return Vector3f(1., 1., 1.);
         std::pair<double, double> uv = get_texture_uv(hit_point);

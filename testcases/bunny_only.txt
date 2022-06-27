@@ -30,7 +30,7 @@ Materials {
     PhongMaterial {
         type DIFF
         color 0 0 0
-        emission 100 100 100
+        emission 40 40 40
         refractive_rate 1
     }
     PhongMaterial {

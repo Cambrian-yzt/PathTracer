@@ -13,16 +13,22 @@ class Ray {
 public:
 
     Ray() = delete;
-    Ray(const Vector3f &orig, const Vector3f &dir, double _wavelength = -1.0) {
+    Ray(const Vector3f &orig, const Vector3f &dir, double _time, double _wavelength = -1.0) {
         origin = orig;
         direction = dir;
         wavelength = _wavelength;
+        time = _time;
     }
 
     Ray(const Ray &r) {
         origin = r.origin;
         direction = r.direction;
         wavelength = r.wavelength;
+        time = r.time;
+    }
+
+    const double get_time() const {
+        return time;
     }
 
     const Vector3f &getOrigin() const {
@@ -73,6 +79,7 @@ private:
 
     Vector3f origin;
     Vector3f direction;
+    double time;  // 用于计算运动模糊，取值为[0, 1]
     double wavelength;  // in meters
 
 };

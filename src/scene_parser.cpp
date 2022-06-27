@@ -422,9 +422,14 @@ Sphere *SceneParser::parseSphere() {
     assert (!strcmp(token, "radius"));
     double radius = readDouble();
     getToken(token);
+    Vector3f motion = Vector3f::ZERO;
+    if (!strcmp(token, "motion")) {
+        motion = readVector3f();
+        getToken(token);
+    }
     assert (!strcmp(token, "}"));
     assert (current_material != nullptr);
-    return new Sphere(center, radius, current_material);
+    return new Sphere(center, radius, current_material, motion);
 }
 
 

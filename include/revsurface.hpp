@@ -138,7 +138,7 @@ public:
         return pnt_surface;
     }
 
-    Vector3f get_texel(Vector3f hit_point) override {
+    Vector3f get_texel(Vector3f hit_point, double time = 0.0) override {
         // hit_point.print();
         // return Vector3f(1., 1., 1.);
         // puts("getting texel");

@@ -60,14 +60,14 @@ Vector3f radiance(SceneParser* scene, const Ray &ray, int depth, unsigned short 
         Vector3f v = Vector3f::cross(w, u);
         //  dir: 合理均匀的漫反射采样：在半球面上单位表面积均匀分布
         Vector3f dir = (u * cos(rnd1) * rnd2_sqrt + v * sin(rnd1) * rnd2_sqrt + w * sqrt(1 - rnd2)).normalized();
-        return (hit_mat->emission + f * radiance(scene, Ray(point, dir, ray.getWavelength()), depth, randState)) * hit.get_texture_color();
+        return (hit_mat->emission + f * radiance(scene, Ray(point, dir, ray.get_time(), ray.getWavelength()), depth, randState)) * hit.get_texture_color();
     } else if (hit_mat->type == SPEC) {  // 镜面反射 specular
         //  dir: 镜面反射直接算就行了，不需要采样
         Vector3f dir = (ray.getDirection() - normal * 2 * Vector3f::dot(normal, ray.getDirection())).normalized();
-        return (hit_mat->emission + f * (radiance(scene, Ray(point, dir, ray.getWavelength()), depth, randState))) * hit.get_texture_color();
+        return (hit_mat->emission + f * (radiance(scene, Ray(point, dir, ray.get_time(), ray.getWavelength()), depth, randState))) * hit.get_texture_color();
     } else if (hit_mat->type == REFR) {  // 折射 refraction 玻璃、水等
         Vector3f refl_dir = (ray.getDirection() - normal * 2 * Vector3f::dot(normal, ray.getDirection())).normalized();
-        Ray refl_ray(point, refl_dir, ray.getWavelength());
+        Ray refl_ray(point, refl_dir, ray.get_time(), ray.getWavelength());
         // TODO: 三角面片法向量真的是向几何体外的吗？
         bool into = Vector3f::dot(normal, nl) > 0;
         double refr_air = 1.0, refr_mat = hit_mat->refractive_rate;
@@ -87,7 +87,7 @@ Vector3f radiance(SceneParser* scene, const Ray &ray, int depth, unsigned short 
             return (hit_mat->emission + f * radiance(scene, refl_ray, depth, randState)) * hit.get_texture_color();
         }
         Vector3f refr_dir = (ray.getDirection() * nnt - normal * ((into? 1: -1) * (ddn * nnt + sqrt(cos2t)))).normalized();
-        Ray refr_ray = Ray(point, refr_dir, ray.getWavelength());
+        Ray refr_ray = Ray(point, refr_dir, ray.get_time(), ray.getWavelength());
         // 计算菲涅尔项（使用Schlick近似）
         double a = refr_mat - refr_air;
         double b = refr_mat + refr_air;
@@ -130,7 +130,7 @@ void shift(SceneParser *scene, Ray &r, unsigned short *randState) {
     Vector3f shift = Vector3f(erand48(randState) - 0.5, erand48(randState) - 0.5, erand48(randState) - 0.5) * ap_size;
     Vector3f shifted_origin = r.getOrigin() + shift;
     Vector3f shifted_dir = (p - shifted_origin).normalized();
-    r = Ray(shifted_origin, shifted_dir, r.getWavelength());
+    r = Ray(shifted_origin, shifted_dir, r.get_time(), r.getWavelength());
 }
 
 int main(int argc, char *argv[]) {
@@ -161,7 +161,7 @@ int main(int argc, char *argv[]) {
                 const double sx = sampling_base.x;
                 const double sy = sampling_base.y;
                 for (int sample_cnt = 0; sample_cnt < SAMPLES_PER_SAMPLING / 4; sample_cnt++) {
-                    double x_smp_bias, y_smp_bias, x_bias, y_bias;
+                    double x_smp_bias, y_smp_bias, x_bias, y_bias, time;
                     double rnd1 = 2 * erand48(randState);
                     double rnd2 = 2 * erand48(randState);
                     if (rnd1 < 1)
@@ -174,16 +174,17 @@ int main(int argc, char *argv[]) {
                         y_smp_bias = 1 - sqrt(2 - rnd2);
                     x_bias = (sx + 0.5 + x_smp_bias) / 2.0;
                     y_bias = (sy + 0.5 + y_smp_bias) / 2.0;
+                    time = erand48(randState);
                     // if (x % 8 == 0 && y == 128) {
                     //     printf("samples: (%lf, %lf)\n", x + x_bias,  y + y_bias);
                     // }
                     if (!scene.getCamera()->dispersion) {
-                        Ray cam_ray = scene.getCamera()->generateRay(Vector2f(x + x_bias, y + y_bias));
+                        Ray cam_ray = scene.getCamera()->generateRay(Vector2f(x + x_bias, y + y_bias), time);
                         shift(&scene, cam_ray, randState);
                         monte_carlo_radiance_sum += radiance(&scene, cam_ray, 0, randState);
                     } else {
                         double wavelength = generate_wavelength(randState);
-                        Ray cam_ray = scene.getCamera()->generateRay(Vector2f(x + x_bias, y + y_bias), wavelength);
+                        Ray cam_ray = scene.getCamera()->generateRay(Vector2f(x + x_bias, y + y_bias), time, wavelength);
                         shift(&scene, cam_ray, randState);
                         Vector3f color = wavelength_to_rgb(wavelength);
                         monte_carlo_radiance_sum += radiance(&scene, cam_ray, 0, randState) * color;
