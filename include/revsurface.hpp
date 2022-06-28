@@ -8,7 +8,7 @@
 #include "triangle.hpp"
 #include <iostream>
 
-const int MAX_NEWTON_ITERATIONS = 200;
+const int MAX_NEWTON_ITERATIONS = 10;
 const double NEWTON_EPSILON = 1e-3;
 
 class RevSurface : public Object3D {
@@ -21,8 +21,8 @@ public:
         for (auto &ctrl_pnt: pCurve->getControls()) {
             assert(ctrl_pnt.z() == 0.0);
         }
-        box_min = Vector3f(-pCurve->r * 5., pCurve->ymin - 5., -pCurve->r * 5.);
-        box_max = Vector3f(pCurve->r * 5., pCurve->ymax + 5., pCurve->r * 5.);
+        box_min = Vector3f(-pCurve->r, pCurve->ymin - 5., -pCurve->r);
+        box_max = Vector3f(pCurve->r, pCurve->ymax + 5., pCurve->r);
     }
 
     ~RevSurface() override { delete pCurve; }
@@ -56,65 +56,62 @@ public:
         double t_max = std::min(tx2, std::min(ty2, tz2));
         if (t_min > t_max || t_min > h.getT())
             return false;
-
-        t_ray = t_min;
+        if (t_min < 0) t_min = 0;
+        // cout << t_min << " " << t_max << endl;
+        // box_min.print();
+        // box_max.print();
+        // r.getOrigin().print();
+        // r.getDirection().print();
+        // puts("===========================");
 
         // puts("guessing parameters");
-        Vector2f params = guessParameters(r, t_ray);
-        theta = params.x();
-        mu = params.y();
-        // if (!pCurve->check_valid(mu))
-        //     return false;
-        // cout << mu << " " << theta << endl;
-        Vector3f dm, dt, pnt_surface, normal;
-        for (int iter = 0; iter < MAX_NEWTON_ITERATIONS; iter++) {
-            // cout << iter;
-            // puts(" round running in Newton's method");
-            if (theta < 0.)
-                theta += 2000000. * M_PI;
-            if (theta >= 2. * M_PI)
-                theta = fmod(theta, 2. * M_PI);
-            if (mu >= 1.)
-                mu = 1. - epsilon;
-            if (mu <= 0.)
-                mu = 0. + epsilon;
-            // puts("===================");
-            // cout << mu << " " << theta << endl;
-            pnt_surface = get_point(theta, mu, dt, dm);
-            normal = Vector3f::cross(dm, dt);
-            // cout << "dt ="; dt.print();
-            // cout << "dm ="; dm.print();
-            // cout << "normal ="; normal.print();
-            Vector3f err = r.pointAtParameter(t_ray) - pnt_surface;
-            // err.print();
-            if (!isnormal(mu) || !isnormal(theta) || !isnormal(t_ray)) return false;
-            if (err.squaredLength() < NEWTON_EPSILON) {
-                // cout << t_ray << " " << mu << " " << endl;
-                // puts("======");
-                if (t_ray < tmin || mu < pCurve->range_min || mu > pCurve->range_max || t_ray > h.getT())
-                    return false;
-                // normal.print();
-                // puts("Newton succeeded");
-                // printf("t_ray = %.4lf, theta = %.4lf, mu = %.4lf\n", t_ray, theta, mu);
-                // normal.normalized().print();
-                h.set(t_ray, Object3D::material, normal.normalized(), get_texel(Vector3f(theta / (2 * M_PI), mu, 0)));
-                // puts("h set");
-                return true;
+        bool hit = false;
+        for (int sample = 0; sample < 10; sample++) {
+            if (t_min > epsilon)
+                t_ray = (double(sample) / 9) * (t_min);
+            else if (t_max > 0) {
+                t_ray = 0;
             }
-            double d = Vector3f::dot(r.getDirection(), normal);
-            // cout << "d = " << d << endl;
-            t_ray -= Vector3f::dot(dm, Vector3f::cross(dt, err)) / d;
-            mu -= Vector3f::dot(r.getDirection(), Vector3f::cross(dt, err)) / d;
-            theta += Vector3f::dot(r.getDirection(), Vector3f::cross(dm, err)) / d;
-            // cout << theta << endl;
-            // puts("===================");
+            else return false;
+            // else if (t_max > 0)
+            //     t_ray = (double(sample) / 19) * (t_max);
+            // else
+            //     return false;
+            Vector2f params = guessParameters(r, t_ray);
+            theta = params.x();
+            mu = params.y();
             // if (!pCurve->check_valid(mu))
             //     return false;
-            // cout << iter;
-            // puts(" rounds ran in Newton's method");
+            // cout << mu << " " << theta << endl;
+            Vector3f dm, dt, pnt_surface, normal;
+            for (int iter = 0; iter < MAX_NEWTON_ITERATIONS; iter++) {
+                if (theta < 0.)
+                    theta += 2000000. * M_PI;
+                if (theta >= 2. * M_PI)
+                    theta = fmod(theta, 2. * M_PI);
+                if (mu >= 1.)
+                    mu = 1. - epsilon;
+                if (mu <= 0.)
+                    mu = 0. + epsilon;
+                pnt_surface = get_point(theta, mu, dt, dm);
+                normal = Vector3f::cross(dm, dt);
+                Vector3f err = r.pointAtParameter(t_ray) - pnt_surface;
+                if (!isnormal(mu) || !isnormal(theta) || !isnormal(t_ray)) break;
+                if (err.squaredLength() < NEWTON_EPSILON) {
+                    if (t_ray < tmin || mu < pCurve->range_min || mu > pCurve->range_max || t_ray > h.getT())
+                        break;
+                    h.set(t_ray, Object3D::material, normal.normalized(), get_texel(Vector3f(theta / (2 * M_PI), mu, 0)));
+                    hit = true;
+                }
+                double d = Vector3f::dot(r.getDirection(), normal);
+                t_ray -= Vector3f::dot(dm, Vector3f::cross(dt, err)) / d;
+                mu -= Vector3f::dot(r.getDirection(), Vector3f::cross(dt, err)) / d;
+                theta += Vector3f::dot(r.getDirection(), Vector3f::cross(dm, err)) / d;
+            }
         }
+
         // exit(0);
-        return false;
+        return hit;
     }
     Vector2f guessParameters(const Ray &r, const double t_ray) {
         Vector3f pnt_ray = r.pointAtParameter(t_ray);

@@ -1,9 +1,9 @@
 
 PerspectiveCamera {
-    center 0 0 10
+    center 0 1 15
     direction 0 0 -1
     up 0 1 0
-    angle 45
+    angle 60
     width 400
     height 400
 }
@@ -21,44 +21,68 @@ Background {
 }
 
 Materials {
-    numMaterials 3
+    numMaterials 6
     PhongMaterial {
         type DIFF
-        color 0.8 0.8 0.8
+        color 0.8 0.75 0.75
         emission 0 0 0
         refractive_rate 1
+        texture_file textures/wood.bmp
+        normal_file textures/wood_normal.bmp
 	}
     PhongMaterial {
         type DIFF
         color 0 0 0
-        emission 10 10 10
+        emission 13 13 12
         refractive_rate 1
     }
     PhongMaterial {
-        type DIFF
-        color 0.9 0.9 0.8
-        emission 0 0 0
+        type REFR
+        color 0.9 0.9 0.9
+        emission 0 0 0 
         refractive_rate 1.5
 	}
-
+    PhongMaterial {
+        type DIFF
+        color 0.2 0.2 0.2
+        emission 0 0 0
+        refractive_rate 1
+	}
+    PhongMaterial {
+        type DIFF
+        color 0.8 0.8 0.8
+        emission 0 0 0 
+        refractive_rate 1.5
+	}
+    PhongMaterial {
+        type DIFF
+        color 0.9 0.9 0.9
+        emission 0 0 0 
+        refractive_rate 1.5
+        texture_file textures/concrete_bricks.bmp
+        normal_file textures/concrete_bricks_normal.bmp
+	}
 }
 
 Group {
-    numObjects 5
+    numObjects 7
     MaterialIndex 0
-    Plane {
-        normal 0 1 0
-        offset -5
+    Rectangle {
+        point -40 -5 -5
+        x 0 0 80
+        y 80 0 0
     }
-    Plane {
-        normal 0 0 1
-        offset -5
+    MaterialIndex 5
+    Rectangle {
+        point -12.5 -5 -5
+        x 25 0 0
+        y 0 25 0
     }
 
     MaterialIndex 2
     Transform {
         ZRotate 15
-        Translate  1.7 0 0
+        Translate  1.7 0 0.05
         RevSurface {
             profile BsplineCurve {
                 controls
@@ -95,7 +119,7 @@ Group {
 
     Transform {
         ZRotate -8
-        Translate  -1.5 -0.5 0
+        Translate  -1.5 -0.5 0.05
         RevSurface {
             profile BsplineCurve {
                 controls
@@ -131,8 +155,30 @@ Group {
     }
     
     MaterialIndex 1
-    Sphere {
-        center 0 10 16 
-        radius 5
+    Rectangle {
+        point -40 75 -5
+        x 0 0 80
+        y 80 0 0
+    }
+
+    MaterialIndex 4
+    Transform {
+        Scale 12 16 16
+        Translate 0.45 -0.4 0.2
+        YRotate -90
+        TriangleMesh {
+            obj_file mesh/bunny_200.obj
+        }
+    }
+
+    MaterialIndex 3
+    Transform {
+        Scale 12 16 16
+        YRotate 180
+        Translate 0.45 -0.4 -0.2
+        TriangleMesh {
+            smooth
+            obj_file mesh/bunny_1k.obj
+        }
     }
 }

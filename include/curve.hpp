@@ -134,7 +134,7 @@
 //             ymax = ctrl_pnt.y() > ymax? ctrl_pnt.y(): ymax;
 //         }
 //         range_min = t[k];
-//         range_max = t[n];
+//         range_max = t[n + 1];
 //     }
 
 //     CurvePoint getPoint(double mu) {

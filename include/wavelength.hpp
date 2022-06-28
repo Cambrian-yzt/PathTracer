@@ -53,8 +53,8 @@ Vector3f wavelength_to_rgb(double wavelength, double gamma = 0.8) {
 
 double generate_wavelength(unsigned short *randState) {
     // 近似得到正午阳光的光谱分布
-    if (erand48(randState) < 0.5) {
-        return (erand48(randState) * (580 - 380) + 380) * 1e-9;
+    if (erand48(randState) < 0.25) {
+        return (erand48(randState) * (480 - 380) + 380) * 1e-9;
     } else {
         return (erand48(randState) * (750 - 380) + 380) * 1e-9;
     }
