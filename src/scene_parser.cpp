@@ -143,11 +143,26 @@ void SceneParser::parsePerspectiveCamera() {
         has_dispersion = true;
         getToken(token);
     }
+    bool mist = false;
+    double extinction_rate, scatter_rate, back_scatter;
+    if (!strcmp(token, "mist")) {
+        mist = true;
+        extinction_rate = readDouble();
+        scatter_rate = readDouble();
+        back_scatter = readDouble();
+        getToken(token);
+    }
     assert (!strcmp(token, "}"));
     if (has_depth_of_field)
         camera = new PerspectiveCamera(center, direction, up, width, height, angle_radians, has_dispersion, focal_length, aperture_size);
     else
         camera = new PerspectiveCamera(center, direction, up, width, height, angle_radians, has_dispersion);
+    if (mist) {
+        camera->mist_extinction = extinction_rate;
+        camera->mist_scatter = scatter_rate;
+        camera->back_scatter = back_scatter;
+        camera->scatter = true;
+    }
 }
 
 void SceneParser::parseBackground() {

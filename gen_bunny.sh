@@ -1,5 +1,5 @@
-bin/PathTracer testcases/focus_on_bunny.txt output/bunny_sample.bmp 4000
-bin/PathTracer testcases/focus_on_bunny.txt output/bunny_sample8k.bmp 8000
+bin/PathTracer testcases/focus_on_bunny.txt output/bunny_sample.bmp 8000
+# bin/PathTracer testcases/focus_on_bunny.txt output/bunny_sample8k.bmp 8000
 # bin/PathTracer testcases/bunny_only.txt output/bunny_only.bmp 12000
 # bin/PathTracer testcases/bunny_and_wineglass.txt output/bunny_and_wineglass.bmp 4000
 # bin/PathTracer testcases/focus_on_wood.txt output/focus_on_wood.bmp 2000

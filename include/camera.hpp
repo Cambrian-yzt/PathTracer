@@ -31,6 +31,10 @@ public:
     double focal_length;
     double aperture_size;
     bool dispersion;
+    bool scatter;
+    double mist_extinction;
+    double mist_scatter;
+    double back_scatter;
 
 protected:
     // Extrinsic parameters

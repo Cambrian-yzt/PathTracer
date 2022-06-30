@@ -51,6 +51,17 @@ Vector3f radiance(SceneParser* scene, const Ray &ray, int depth, unsigned short 
             return hit_mat->emission;
         f = f * (1. / max_refl);
     }
+    if (scene->getCamera()->scatter) {  // 散射功能开启
+        if (erand48(randState) > pow(scene->getCamera()->mist_extinction, t)) {  // 吸收，返回黑色
+            return Vector3f::ZERO;
+        }
+        if (erand48(randState) > pow(scene->getCamera()->mist_scatter, t)) {  // 散射
+            Vector3f scatter_pnt = ray.pointAtParameter(log(1 - erand48(randState) * (1 - pow(scene->getCamera()->mist_scatter, t))) / log(scene->getCamera()->mist_scatter));  // 根据散射点分布函数采样
+            Vector3f scatter_dir = (Vector3f(erand48(randState) - 0.5, erand48(randState), erand48(randState) - 0.5) - ray.getDirection() * scene->getCamera()->back_scatter).normalized();  // 随机+反向散射
+            Ray scatter_ray = Ray(scatter_pnt, scatter_dir, ray.get_time(), ray.getWavelength());
+            return radiance(scene, scatter_ray, depth, randState);  // 继续模拟散射光线
+        }
+    }
     if (hit_mat->type == DIFF) {  // 漫反射 diffuse
         double rnd1 = 2 * M_PI * erand48(randState);
         double rnd2 = erand48(randState);
