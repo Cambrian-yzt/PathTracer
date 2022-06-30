@@ -71,7 +71,7 @@ public:
         double d = Vector3f::dot(normal, point);
         Plane plane = Plane(normal, d, Object3D::material);
         Hit plane_hit;
-        if (plane.intersect(r, plane_hit, tmin) && plane_hit.getT() < h.getT()) {
+        if (plane.intersect(r, plane_hit, tmin) && plane_hit.getT() < h.getT() && plane_hit.getT() > tmin) {
             Vector3f hit_point = r.pointAtParameter(plane_hit.getT());
             double xmin = std::min(point.x(), (point + x + y).x());
             double ymin = std::min(point.y(), (point + x + y).y());

@@ -9,7 +9,7 @@
 #include <iostream>
 
 const int MAX_NEWTON_ITERATIONS = 10;
-const double NEWTON_EPSILON = 1e-3;
+const double NEWTON_EPSILON = 1e-5;
 
 class RevSurface : public Object3D {
 private:
@@ -21,8 +21,8 @@ public:
         for (auto &ctrl_pnt: pCurve->getControls()) {
             assert(ctrl_pnt.z() == 0.0);
         }
-        box_min = Vector3f(-pCurve->r, pCurve->ymin - 5., -pCurve->r);
-        box_max = Vector3f(pCurve->r, pCurve->ymax + 5., pCurve->r);
+        box_min = Vector3f(-pCurve->r, pCurve->ymin, -pCurve->r);
+        box_max = Vector3f(pCurve->r, pCurve->ymax, pCurve->r);
     }
 
     ~RevSurface() override { delete pCurve; }
@@ -66,9 +66,9 @@ public:
 
         // puts("guessing parameters");
         bool hit = false;
-        for (int sample = 0; sample < 10; sample++) {
+        for (int sample = 0; sample < 20; sample++) {
             if (t_min > epsilon)
-                t_ray = (double(sample) / 9) * (t_min);
+                t_ray = (double(sample) / 19) * (t_min);
             else if (t_max > 0) {
                 t_ray = 0;
             }

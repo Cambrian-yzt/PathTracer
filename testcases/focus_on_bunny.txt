@@ -3,10 +3,8 @@ PerspectiveCamera {
     direction 0 -0.042612 -1
     up 0 1 0
     angle 60
-    width  512
-    height 384
-    focal_length 150
-    aperture_size 4
+    width  1024
+    height 768
 }
 
 Lights {
@@ -22,7 +20,7 @@ Background {
 }
 
 Materials {
-    numMaterials 15
+    numMaterials 16
     PhongMaterial { 
       type DIFF
       color 0.9 0.9 0.9
@@ -55,7 +53,7 @@ Materials {
       texture_file textures/tex_world_map.bmp
     }
     PhongMaterial {
-      type DIFF
+      type REFR
       color 0.65 0.8 0.65
       emission 0 0 0
       refractive_rate 1.5
@@ -90,7 +88,8 @@ Materials {
       color 0.99 0.99 0.99
       emission 0 0 0
       refractive_rate 1
-      texture_file textures/tex_stone.bmp
+      texture_file textures/concrete_bricks.bmp
+      normal_file textures/concrete_bricks_normal.bmp
     }
     PhongMaterial {
       type DIFF
@@ -110,7 +109,7 @@ Materials {
       color 0.99 0.99 0.99
       emission 0 0 0
       refractive_rate 1
-      texture_file textures/wood.bmp
+      texture_file textures/lava.bmp
     }
     PhongMaterial { 
       type REFR
@@ -118,10 +117,16 @@ Materials {
       emission 0 0 0
       refractive_rate 1.7
 	}
+    PhongMaterial {
+      type DIFF
+      color 0.7 0.5 0.75
+      emission 0 0 0
+      refractive_rate 1
+    }
 }
 
 Group {
-    numObjects 17
+    numObjects 18
 
     MaterialIndex 0
     Plane {
@@ -217,7 +222,6 @@ Group {
 		Scale  90 90 90
 		Translate  0.9 -0.06 1.7	
         TriangleMesh {
-            smooth
             obj_file mesh/bunny_200.obj
         }
     }
@@ -226,5 +230,12 @@ Group {
     Sphere {
         center 80 16.5 35
         radius 16.5
+    }
+    
+    MaterialIndex 15
+    Sphere {
+        center 65 55 180
+        radius 15
+        motion 10 0 -5
     }
 }

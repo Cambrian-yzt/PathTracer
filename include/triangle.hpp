@@ -135,28 +135,6 @@ public:
 				Vector3f t = Vector3f(t0, t1, t2);
 				box_ext_on_axis = max(fabs(Vector3f::dot(t, axes[i])), box_ext_on_axis);
 			}
-			// box_ext_on_axis = max(
-			// 	max(
-			// 		max(
-			// 			fabs(Vector3f::dot(Vector3f(cen[0] - ext[0], cen[1] - ext[1], cen[2] - ext[2]), axes[i])),
-			// 			fabs(Vector3f::dot(Vector3f(cen[0] - ext[0], cen[1] - ext[1], cen[2] + ext[2]), axes[i]))
-			// 		),
-			// 		max(
-			// 			fabs(Vector3f::dot(Vector3f(cen[0] - ext[0], cen[1] + ext[1], cen[2] - ext[2]), axes[i])),
-			// 			fabs(Vector3f::dot(Vector3f(cen[0] + ext[0], cen[1] - ext[1], cen[2] - ext[2]), axes[i]))
-			// 		)
-			// 	),
-			// 	max(
-			// 		max(
-			// 			fabs(Vector3f::dot(Vector3f(cen[0] - ext[0], cen[1] + ext[1], cen[2] + ext[2]), axes[i])),
-			// 			fabs(Vector3f::dot(Vector3f(cen[0] + ext[0], cen[1] - ext[1], cen[2] + ext[2]), axes[i]))
-			// 		),
-			// 		max(
-			// 			fabs(Vector3f::dot(Vector3f(cen[0] + ext[0], cen[1] + ext[1], cen[2] - ext[2]), axes[i])),
-			// 			fabs(Vector3f::dot(Vector3f(cen[0] + ext[0], cen[1] + ext[1], cen[2] + ext[2]), axes[i]))
-			// 		)
-			// 	)
-			// );
 			if (min(pa, min(pb, pc)) > box_ext_on_axis || max(pa, max(pb, pc)) < - box_ext_on_axis)
 				return OUT;
 		}

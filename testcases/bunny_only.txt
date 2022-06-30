@@ -30,15 +30,15 @@ Materials {
     PhongMaterial {
         type DIFF
         color 0 0 0
-        emission 40 40 40
+        emission 18 18 18
         refractive_rate 1
     }
     PhongMaterial {
       type REFR
-      color 0.8 0.8 0.8
+      color 0.99 0.99 0.99
       emission 0 0 0
       refractive_rate 1.5
-      cauchy 1.57 0.0073
+      cauchy 2.385 0.0117
     }
     PhongMaterial {
         type DIFF
@@ -57,8 +57,8 @@ Group {
     }
     MaterialIndex 0
     Sphere {
-        center 0 1 -0.5
-        radius 0.25
+        center 0 1.1 -0.5
+        radius 0.5
     }
     MaterialIndex 2
     Plane {
